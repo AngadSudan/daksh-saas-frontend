@@ -31,23 +31,28 @@ function LoginPage() {
     try {
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/user/login`,
-        formData
+        formData,
+        {
+          withCredentials: true,
+        }
       );
       console.log(response);
       if (!response.data.data) {
         throw new Error(response.data.message);
       }
 
-      Cookies.set("user", response.data.data.user, {
-        httpOnly: true,
+      console.log("started setting cookies");
+      Cookies.set("user", JSON.stringify(response.data.data.user), {
+        path: "/",
         secure: true,
-        sameSite: "strict",
+        sameSite: "Strict",
       });
       Cookies.set("token", response.data.data.accessToken, {
-        httpOnly: true,
+        path: "/",
         secure: true,
-        sameSite: "strict",
+        sameSite: "Strict",
       });
+      console.log("cookies setting end");
 
       router.push("/home");
     } catch (error) {
@@ -68,7 +73,7 @@ function LoginPage() {
     <div className="min-h-screen w-full grid place-items-center bg-gradient-to-t from-[#1A0330] to-[#480179] px-4 py-8 relative">
       <Toaster></Toaster>
       <div
-        className="w-full max-w-5xl h-auto md:h-[90vh] m-auto rounded-3xl overflow-hidden shadow-2xl relative"
+        className="w-full md:w-[80%] h-auto md:h-[90vh] m-auto rounded-3xl overflow-hidden shadow-2xl relative"
         style={{
           backgroundImage: `url(${authBg.src})`,
           backgroundSize: "cover",
@@ -160,7 +165,7 @@ function LoginPage() {
             <Image
               src={login}
               alt="login-image"
-              className="w-full h-full object-cover"
+              className="w-full h-full object-contain"
             />
           </div>
         </div>

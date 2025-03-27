@@ -59,7 +59,7 @@ function Page() {
     <div className="min-h-screen w-full grid place-items-center bg-gradient-to-t from-[#1A0330] to-[#480179] px-2 sm:px-4 py-4 sm:py-8 relative">
       <Toaster />
       <div
-        className="w-full max-w-5xl h-auto md:h-[90vh] m-auto rounded-3xl overflow-hidden shadow-2xl relative"
+        className="w-full md:w-[80%] h-auto md:h-[90vh] m-auto rounded-3xl overflow-hidden shadow-2xl relative"
         style={{
           backgroundImage: `url(${authBg.src})`,
           backgroundSize: "cover",
@@ -174,7 +174,7 @@ function Page() {
             <Image
               src={login}
               alt="signup-image"
-              className="w-full h-full object-cover"
+              className="w-full h-full object-contain"
             />
           </div>
         </div>
