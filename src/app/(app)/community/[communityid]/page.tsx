@@ -7,10 +7,11 @@ import {
   FileText,
   ChevronRight,
   ChevronDown,
+  PlusCircle,
   ArrowLeft,
 } from "lucide-react";
 import { motion } from "framer-motion";
-
+import NotesCard from "@/components/general/NotesCard";
 function CommunitySubjectsPage() {
   const router = useParams();
   const [communityName, setCommunityName] = useState("");
@@ -19,7 +20,11 @@ function CommunitySubjectsPage() {
   const [selectedChapter, setSelectedChapter] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-
+  const [newSubject, setNewSubject] = useState(false);
+  const [Notes, setNotes] = useState([]);
+  const [subjectform, setSubjectForm] = useState({
+    name: "",
+  });
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -45,6 +50,24 @@ function CommunitySubjectsPage() {
     setSelectedChapter(null);
   };
 
+  useEffect(() => {
+    const fetchNotes = async () => {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/community/chapter/${selectedChapter.id}/notes`,
+        {
+          withCredentials: true,
+        }
+      );
+      console.log(response.data.data[0].notes);
+      setNotes(response.data.data[0].notes);
+    };
+    if (selectedChapter === null) {
+      setNotes([]);
+      return;
+    } else {
+      fetchNotes();
+    }
+  }, [selectedChapter]);
   const handleChapterSelect = (chapter) => {
     setSelectedChapter(chapter);
   };
@@ -67,7 +90,10 @@ function CommunitySubjectsPage() {
   }
 
   return (
-    <div className="flex h-screen">
+    <div className="flex h-screen relative">
+      {newSubject && (
+        <div className=" absolute z-50 w-full h-screen bg-black/80"></div>
+      )}
       {/* Sidebar */}
       <div className="w-80 bg-gray-50 border-r overflow-y-auto">
         <div className="p-6 border-b flex gap-24">
@@ -78,7 +104,7 @@ function CommunitySubjectsPage() {
           <h2 className="text-2xl font-bold text-gray-800">{communityName}</h2>
         </div>
 
-        <div className="py-4">
+        <div className="py-4 h-[70svh]">
           {/* <h1>{communityName}</h1> */}
           {subjects.map((subject) => (
             <div key={subject.id} className="mb-2">
@@ -122,6 +148,14 @@ function CommunitySubjectsPage() {
             </div>
           ))}
         </div>
+
+        <button
+          onClick={() => setNewSubject(true)}
+          className="flex gap-4 w-[80%] mx-auto bg-[#480179] text-white py-3 px-6 rounded-md mt-4"
+        >
+          <PlusCircle className="w-5 h-5" />
+          <span className="font-semibold">Create New Subject</span>
+        </button>
       </div>
 
       {/* Content Area */}
@@ -139,17 +173,19 @@ function CommunitySubjectsPage() {
           </div>
         ) : (
           <div>
+            {/* add a grid for all the notes of this particular chapter  */}
             <h1 className="text-3xl font-bold text-gray-800 mb-6">
               {selectedChapter.name}
             </h1>
-            {/* Load chapter-specific content here */}
-            <div className="bg-gray-50 p-6 rounded-lg">
-              <p className="text-gray-700">
-                Chapter content will be loaded dynamically based on the selected
-                chapter. This is a placeholder for the actual chapter notes or
-                learning materials.
-              </p>
-            </div>
+            {Notes.length === 0 ? (
+              <>UPLOAD SOMETHING TO DO FIRST</>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {Notes.map((note, index) => {
+                  return <NotesCard note={note} key={index} />;
+                })}
+              </div>
+            )}
           </div>
         )}
       </div>
