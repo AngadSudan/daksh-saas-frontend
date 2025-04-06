@@ -5,6 +5,7 @@ import { Search, PlusCircle, X, Check } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import CommunityCard from "@/components/general/CommunityCard";
 import { motion, AnimatePresence } from "framer-motion";
+import TodoRoute from "@/components/general/TodoRoute";
 
 function CommunitiesPage() {
   const [openDialogBox, setOpenDialogBox] = useState(false);
@@ -74,6 +75,7 @@ function CommunitiesPage() {
 
   return (
     <div className="relative">
+      <TodoRoute />
       <AnimatePresence>
         {openDialogBox && (
           <motion.div

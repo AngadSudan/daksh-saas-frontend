@@ -5,13 +5,17 @@ import axios from "axios";
 import {
   Book,
   FileText,
-  ChevronRight,
   ChevronDown,
+  X,
   PlusCircle,
   ArrowLeft,
+  Check,
 } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import NotesCard from "@/components/general/NotesCard";
+import TodoRoute from "@/components/general/TodoRoute";
+import { Skeleton } from "@/components/ui/skeleton";
+import NotesForm from "@/components/general/NotesForm";
 function CommunitySubjectsPage() {
   const router = useParams();
   const [communityName, setCommunityName] = useState("");
@@ -22,9 +26,15 @@ function CommunitySubjectsPage() {
   const [error, setError] = useState(null);
   const [newSubject, setNewSubject] = useState(false);
   const [Notes, setNotes] = useState([]);
+  const [newChapter, setNewChapter] = useState(false);
   const [subjectform, setSubjectForm] = useState({
     name: "",
   });
+  const [chapterform, setChapterform] = useState({
+    name: "",
+  });
+  const [notesUpload, setNotesUpload] = useState(false);
+  const [openDialogBox, setOpenDialogBox] = useState(false);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -49,7 +59,21 @@ function CommunitySubjectsPage() {
     setSelectedSubject(subject);
     setSelectedChapter(null);
   };
-
+  const handleNewChapter = async (subject) => {
+    const response = await axios.post(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/community/subject/${subject}`,
+      {
+        name: chapterform.name,
+      },
+      {
+        withCredentials: true,
+      }
+    );
+    console.log(response.data.data);
+  };
+  const handleChapterChange = (e) => {
+    setChapterform((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
   useEffect(() => {
     const fetchNotes = async () => {
       const response = await axios.get(
@@ -88,12 +112,162 @@ function CommunitySubjectsPage() {
       </div>
     );
   }
+  const handleChange = (e) => {
+    setSubjectForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+  const handleSubmit = async () => {
+    const response = await axios.post(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/community/${router.communityid}/add-subjects`,
+      {
+        name: subjectform.name,
+      },
+      {
+        withCredentials: true,
+      }
+    );
 
+    console.log(response.data.data);
+    setSubjects((prev) => [...prev, response.data.data]);
+    setSubjectForm({ name: "" });
+  };
   return (
-    <div className="flex h-screen relative">
-      {newSubject && (
-        <div className=" absolute z-50 w-full h-screen bg-black/80"></div>
+    <div className=" flex h-screen relative">
+      {newChapter && (
+        <AnimatePresence>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+            onClick={() => setNewChapter(false)}
+          >
+            <motion.form
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              onSubmit={() => {
+                handleNewChapter(selectedSubject.id);
+              }}
+              className="bg-white w-full max-w-md rounded-2xl shadow-2xl p-8 relative"
+            >
+              {/* Close Button */}
+              <button
+                type="button"
+                onClick={() => setNewChapter(false)}
+                className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
+              >
+                <X size={24} />
+              </button>
+
+              <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
+                Add New Chapter
+              </h2>
+
+              {/* Community Name Input */}
+              <div className="mb-4">
+                <label
+                  htmlFor="name"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
+                  Chapter Name
+                </label>
+                <input
+                  type="text"
+                  id="name"
+                  name="name"
+                  value={chapterform.name}
+                  onChange={handleChapterChange}
+                  className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 border-gray-300 focus:ring-[#480179] `}
+                  placeholder="Enter subject name"
+                />
+              </div>
+
+              {/* Submit Button */}
+              <button
+                type="submit"
+                onSubmit={() => {
+                  handleNewChapter(selectedSubject.id);
+                }}
+                className="w-full bg-[#480179] text-white py-3 rounded-lg hover:bg-[#5C0C99] transition-colors flex items-center justify-center"
+              >
+                <Check className="mr-2" size={20} />
+                Add Chapter
+              </button>
+            </motion.form>
+          </motion.div>
+        </AnimatePresence>
       )}
+      {newSubject && (
+        <AnimatePresence>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+            onClick={() => setNewSubject(false)}
+          >
+            <motion.form
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              onSubmit={handleSubmit}
+              className="bg-white w-full max-w-md rounded-2xl shadow-2xl p-8 relative"
+            >
+              {/* Close Button */}
+              <button
+                type="button"
+                onClick={() => setNewSubject(false)}
+                className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
+              >
+                <X size={24} />
+              </button>
+
+              <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
+                Add New Subject
+              </h2>
+
+              {/* Community Name Input */}
+              <div className="mb-4">
+                <label
+                  htmlFor="name"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
+                  Subject Name
+                </label>
+                <input
+                  type="text"
+                  id="name"
+                  name="name"
+                  value={subjectform.name}
+                  onChange={handleChange}
+                  className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 border-gray-300 focus:ring-[#480179] `}
+                  placeholder="Enter subject name"
+                />
+              </div>
+
+              {/* Submit Button */}
+              <button
+                type="submit"
+                onSubmit={handleSubmit}
+                className="w-full bg-[#480179] text-white py-3 rounded-lg hover:bg-[#5C0C99] transition-colors flex items-center justify-center"
+              >
+                <Check className="mr-2" size={20} />
+                Add Subject
+              </button>
+            </motion.form>
+          </motion.div>
+        </AnimatePresence>
+      )}
+      {notesUpload && (
+        <NotesForm
+          onOpen={notesUpload}
+          setOnOpen={setNotesUpload}
+          chapterId={selectedChapter.id}
+        />
+      )}
+      <TodoRoute />
       {/* Sidebar */}
       <div className="w-80 bg-gray-50 border-r overflow-y-auto">
         <div className="p-6 border-b flex gap-24">
@@ -120,7 +294,13 @@ function CommunitySubjectsPage() {
                   <Book className="w-5 h-5" />
                   <span className="font-medium">{subject.name}</span>
                 </div>
-                <ChevronDown className="w-5 h-5 text-gray-400" />
+                <div className="flex gap-4">
+                  <PlusCircle
+                    onClick={() => setNewChapter(true)}
+                    className="w-5 h-5 text-gray-400"
+                  />
+                  <ChevronDown className="w-5 h-5 text-gray-400" />
+                </div>
               </div>
 
               {/* Chapters Dropdown */}
@@ -174,11 +354,28 @@ function CommunitySubjectsPage() {
         ) : (
           <div>
             {/* add a grid for all the notes of this particular chapter  */}
-            <h1 className="text-3xl font-bold text-gray-800 mb-6">
-              {selectedChapter.name}
-            </h1>
+            <div className="flex justify-between w-full p-2">
+              <h1 className="text-3xl my-auto font-bold text-gray-800 mb-6">
+                {selectedChapter.name}
+              </h1>
+
+              <button
+                onClick={() => {
+                  alert("uploading clicked");
+                  setNotesUpload(true);
+                }}
+                className="flex gap-4 w-fit justify-center items-center mx-auto bg-[#480179] text-white py-2 mb-3 px-6 rounded-md "
+              >
+                <PlusCircle className="w-5 h-5" />
+                <span className="font-semibold">Upload Notes</span>
+              </button>
+            </div>
             {Notes.length === 0 ? (
-              <>UPLOAD SOMETHING TO DO FIRST</>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 ">
+                {[1, 2, 3].map((_, index) => (
+                  <Skeleton key={index} className="h-48 w-full rounded-lg" />
+                ))}
+              </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {Notes.map((note, index) => {
