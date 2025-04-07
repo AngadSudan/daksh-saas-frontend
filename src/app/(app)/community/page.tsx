@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Search, PlusCircle, X, Check } from "lucide-react";
+import { Search, PlusCircle, X, Check, ArrowLeft } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import CommunityCard from "@/components/general/CommunityCard";
 import { motion, AnimatePresence } from "framer-motion";
@@ -37,7 +37,12 @@ function CommunitiesPage() {
         const response = await axios.post(
           `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/community/communities`,
           newCommunity,
-          { withCredentials: true }
+          {
+            withCredentials: true,
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("user")}`,
+            },
+          }
         );
         console.log(response.data.data);
 
@@ -55,9 +60,18 @@ function CommunitiesPage() {
       try {
         setIsLoading(true);
         const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/community/get-user-communities`
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/community/get-user-communities`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("user")}`,
+            },
+          }
         );
-        setCommunities(response.data.data);
+        if (response.data.data.length === 0) {
+          setCommunities([]);
+        } else {
+          setCommunities(response.data.data);
+        }
       } catch (error) {
         console.error("Failed to fetch communities", error);
       } finally {
@@ -180,7 +194,13 @@ function CommunitiesPage() {
       {/* Rest of the existing component remains the same */}
       <div className="container mx-auto px-4 py-8 max-w-6xl">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-800">My Communities</h1>
+          <div className="flex gap-4">
+            <ArrowLeft
+              onClick={() => (window.location.href = "/home")}
+              className="w-8 h-8 object-cover text-gray-400"
+            />
+            <h1 className="text-3xl font-bold text-gray-800">My Communities</h1>
+          </div>
           <button
             onClick={() => setOpenDialogBox(true)}
             className="flex items-center bg-[#480179] text-white px-4 py-2 rounded-lg hover:bg-[#480179]/80 transition-colors"

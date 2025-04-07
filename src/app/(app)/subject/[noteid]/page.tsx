@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import Chatbot from "@/components/general/Chatbot";
 
 function DocumentViewer() {
   const router = useParams();
@@ -29,6 +30,9 @@ function DocumentViewer() {
           `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/community/get-by-notes-id/${router.noteid}`,
           {
             withCredentials: true,
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("user")}`,
+            },
           }
         );
 
@@ -171,24 +175,29 @@ function DocumentViewer() {
           </div>
         </motion.div>
       )}
+      <div className="flex gap-2">
+        {/* Document Viewer */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="flex-1 w-3/5 bg-white rounded-lg shadow-lg overflow-hidden"
+        >
+          {documentUrl && (
+            <iframe
+              src={getViewerUrl()}
+              className="w-full h-[80vh] border-none"
+              title={noteDetails?.title || "Document Viewer"}
+              loading="lazy"
+              allowFullScreen
+            />
+          )}
+        </motion.div>
 
-      {/* Document Viewer */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.2 }}
-        className="flex-1 bg-white rounded-lg shadow-lg overflow-hidden"
-      >
-        {documentUrl && (
-          <iframe
-            src={getViewerUrl()}
-            className="w-full h-[80vh] border-none"
-            title={noteDetails?.title || "Document Viewer"}
-            loading="lazy"
-            allowFullScreen
-          />
-        )}
-      </motion.div>
+        <div className="w-2/5 bg-white h-[80svh]">
+          <Chatbot />
+        </div>
+      </div>
     </div>
   );
 }

@@ -10,12 +10,15 @@ import {
   PlusCircle,
   ArrowLeft,
   Check,
+  User,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import NotesCard from "@/components/general/NotesCard";
 import TodoRoute from "@/components/general/TodoRoute";
 import { Skeleton } from "@/components/ui/skeleton";
 import NotesForm from "@/components/general/NotesForm";
+import Participants from "@/components/general/Participants";
+
 function CommunitySubjectsPage() {
   const router = useParams();
   const [communityName, setCommunityName] = useState("");
@@ -30,6 +33,7 @@ function CommunitySubjectsPage() {
   const [subjectform, setSubjectForm] = useState({
     name: "",
   });
+  const [addParticipant, setAddParticipant] = useState(false);
   const [chapterform, setChapterform] = useState({
     name: "",
   });
@@ -41,7 +45,12 @@ function CommunitySubjectsPage() {
         setIsLoading(true);
         const response = await axios.get(
           `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/community/communities/${router.communityid}/subjects`,
-          { withCredentials: true }
+          {
+            withCredentials: true,
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("user")}`,
+            },
+          }
         );
         setSubjects(response.data.data.subjects);
         setCommunityName(response.data.data.name);
@@ -67,6 +76,9 @@ function CommunitySubjectsPage() {
       },
       {
         withCredentials: true,
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("user")}`,
+        },
       }
     );
     console.log(response.data.data);
@@ -80,6 +92,9 @@ function CommunitySubjectsPage() {
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/community/chapter/${selectedChapter.id}/notes`,
         {
           withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("user")}`,
+          },
         }
       );
       console.log(response.data.data[0].notes);
@@ -123,6 +138,9 @@ function CommunitySubjectsPage() {
       },
       {
         withCredentials: true,
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("user")}`,
+        },
       }
     );
 
@@ -267,6 +285,12 @@ function CommunitySubjectsPage() {
           chapterId={selectedChapter.id}
         />
       )}
+      {addParticipant && (
+        <Participants
+          onSetAdd={setAddParticipant}
+          communityId={router.communityid}
+        />
+      )}
       <TodoRoute />
       {/* Sidebar */}
       <div className="w-80 bg-gray-50 border-r overflow-y-auto">
@@ -275,7 +299,15 @@ function CommunitySubjectsPage() {
             onClick={() => (window.location.href = "/community")}
             className="w-6 h-6 text-gray-400"
           />
-          <h2 className="text-2xl font-bold text-gray-800">{communityName}</h2>
+          <div className="flex gap-10">
+            <h2 className="text-2xl font-bold text-gray-800">
+              {communityName}
+            </h2>
+            <User
+              onClick={() => setAddParticipant(true)}
+              className="w-5 h-5 my-auto"
+            />
+          </div>
         </div>
 
         <div className="py-4 h-[70svh]">

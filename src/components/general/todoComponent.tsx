@@ -36,7 +36,12 @@ const TodoCard = ({ todo = todoExample, onUpdate, onDelete }) => {
 
     const response = await axios.put(
       `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/todo/toggle-completion-status/${todo.id}`,
-      { withCredentials: true }
+      {
+        withCredentials: true,
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("user")}`,
+        },
+      }
     );
 
     console.log(response);
@@ -51,7 +56,12 @@ const TodoCard = ({ todo = todoExample, onUpdate, onDelete }) => {
 
     const response = await axios.put(
       `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/todo/toggle-pin-status/${todo.id}`,
-      { withCredentials: true }
+      {
+        withCredentials: true,
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("user")}`,
+        },
+      }
     );
     console.log(response);
     const newPinned = todo.pinned === "PINNED" ? "UNPINNED" : "PINNED";

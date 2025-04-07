@@ -28,7 +28,10 @@ function NotesForm({ onOpen, setOnOpen, chapterId }) {
         formData,
         {
           withCredentials: true,
-          headers: { "Content-Type": "multipart/form-data" },
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${localStorage.getItem("user")}`,
+          },
         }
       );
       console.log("File uploaded successfully:", response.data.data);

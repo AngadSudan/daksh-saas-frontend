@@ -40,7 +40,8 @@ function LoginPage() {
       if (!response.data.data) {
         throw new Error(response.data.message);
       }
-
+      localStorage.setItem("user", response.data.data.accessToken);
+      localStorage.setItem("loggedin", "true");
       console.log("started setting cookies");
       Cookies.set("user", JSON.stringify(response.data.data.user), {
         path: "/",

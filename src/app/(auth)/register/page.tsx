@@ -30,7 +30,7 @@ function Page() {
   const handleRegister = async () => {
     try {
       const response = await axios.post(
-        `${process.env.BACKEND_URL}/api/v1/user/register`,
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/user/register`,
         formData
       );
       console.log(response);
@@ -41,14 +41,16 @@ function Page() {
       Cookies.set("user", response.data.data, {
         httpOnly: true,
         secure: true,
+        path: "/",
         sameSite: "strict",
       });
       Cookies.set("token", response.data.data.token, {
         httpOnly: true,
         secure: true,
+        path: "/",
         sameSite: "strict",
       });
-      router.push("/home");
+      router.push("/login");
     } catch (error) {
       console.log(error);
       toast.error(error.message);
