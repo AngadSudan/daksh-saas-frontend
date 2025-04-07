@@ -26,6 +26,9 @@ function Page() {
     setShowPassword(!showPassword);
   };
 
+  if (localStorage.getItem("user")) {
+    window.location.href = "/home";
+  }
   const router = useRouter();
   const handleRegister = async () => {
     try {

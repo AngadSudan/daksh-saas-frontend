@@ -29,6 +29,9 @@ function TodoList() {
     priority: "MEDIUM",
   });
 
+  if (!localStorage.getItem("user")) {
+    window.location.href = "/login";
+  }
   useEffect(() => {
     const loadTodos = async () => {
       setIsLoading(true);

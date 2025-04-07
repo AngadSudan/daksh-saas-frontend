@@ -10,6 +10,9 @@ import {
 } from "lucide-react";
 
 const ContactForm = () => {
+  if (localStorage.getItem("user")) {
+    window.location.href = "/home";
+  }
   const [formData, setFormData] = useState({
     name: "",
     email: "",

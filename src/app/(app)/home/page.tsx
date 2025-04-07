@@ -11,6 +11,9 @@ function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  if (!localStorage.getItem("user")) {
+    window.location.href = "/login";
+  }
   useEffect(() => {
     const fetchData = async () => {
       try {

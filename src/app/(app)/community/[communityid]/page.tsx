@@ -39,6 +39,10 @@ function CommunitySubjectsPage() {
   });
   const [notesUpload, setNotesUpload] = useState(false);
   const [openDialogBox, setOpenDialogBox] = useState(false);
+
+  if (localStorage.getItem("user") === null) {
+    window.location.href = "/login";
+  }
   useEffect(() => {
     const fetchData = async () => {
       try {

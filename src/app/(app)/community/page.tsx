@@ -18,6 +18,10 @@ function CommunitiesPage() {
     websiteUrl: "",
   });
 
+  if (!localStorage.getItem("user")) {
+    window.location.href = "/login";
+  }
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setNewCommunity({ ...newCommunity, [name]: value });

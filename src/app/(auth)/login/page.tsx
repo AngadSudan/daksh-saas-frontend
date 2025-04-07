@@ -15,6 +15,9 @@ function LoginPage() {
     email: "",
     password: "",
   });
+  if (localStorage.getItem("user")) {
+    window.location.href = "/home";
+  }
   const [focusedField, setFocusedField] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
 
