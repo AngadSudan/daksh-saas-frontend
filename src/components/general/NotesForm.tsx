@@ -5,6 +5,7 @@ import { X, Check } from "lucide-react";
 import axios from "axios";
 
 function NotesForm({ onOpen, setOnOpen, chapterId }) {
+  console.log(onOpen);
   const [newNotes, setNewNotes] = useState({
     title: "",
     description: "",

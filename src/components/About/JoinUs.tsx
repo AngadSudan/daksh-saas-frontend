@@ -1,15 +1,5 @@
 import React from "react";
-import {
-  Rocket,
-  BookOpen,
-  Target,
-  Shield,
-  Users,
-  Globe,
-  Mail,
-  MapPin,
-  Check,
-} from "lucide-react";
+import { Rocket, BookOpen, Target } from "lucide-react";
 
 const JoinUs = () => {
   const features = [

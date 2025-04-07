@@ -1,14 +1,5 @@
 import React from "react";
-import {
-  Calendar,
-  FileText,
-  CheckCircle,
-  Rocket,
-  BookOpen,
-  Users,
-  Award,
-  Star,
-} from "lucide-react";
+import { Users, Star } from "lucide-react";
 const Testimonials = () => {
   const testimonials = [
     {
@@ -37,7 +28,9 @@ const Testimonials = () => {
           {testimonials.map((testimonial, index) => (
             <div key={index} className="bg-gray-50 p-8 rounded-lg shadow-md">
               <div className="flex justify-center mb-4">{testimonial.icon}</div>
-              <p className="italic text-gray-600 mb-4">"{testimonial.quote}"</p>
+              <p className="italic text-gray-600 mb-4">
+                &quot;{testimonial.quote}&quot;
+              </p>
               <div className="font-semibold text-[#480179]">
                 {testimonial.name} - {testimonial.role}
               </div>

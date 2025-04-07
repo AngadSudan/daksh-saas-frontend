@@ -4,6 +4,7 @@ import axios from "axios";
 import TodoCard from "@/components/general/todoComponent";
 import CommunityCard from "@/components/general/CommunityCard";
 import { ArrowRight, Pin, Users } from "lucide-react";
+import Link from "next/link";
 
 function DashboardPage() {
   const [todos, setTodos] = useState([]);
@@ -11,9 +12,9 @@ function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  if (!localStorage.getItem("user")) {
-    window.location.href = "/login";
-  }
+  // if (!localStorage.getItem("user")) {
+  //   window.location.href = "/login";
+  // }
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -114,18 +115,18 @@ function DashboardPage() {
                   <Users className="h-5 w-5 text-[#5C0C99]/80 mr-2" />
                   <h2 className="text-xl font-semibold">Your Communities</h2>
                 </div>
-                <a
+                <Link
                   href="/community"
                   className="text-[#5C0C99] hover:text-[#5C0C99]/80 flex items-center text-sm"
                 >
                   View All <ArrowRight className="ml-1 h-4 w-4" />
-                </a>
+                </Link>
               </div>
 
               {communities.length === 0 ? (
                 <div className="bg-gray-50 rounded-lg p-6 text-center text-gray-500">
-                  You aren't part of any communities yet. Join communities to
-                  collaborate.
+                  You aren&apos;t part of any communities yet. Join communities
+                  to collaborate.
                 </div>
               ) : (
                 <div className="space-y-4">
@@ -136,12 +137,12 @@ function DashboardPage() {
               )}
 
               <div className="mt-4 pt-4 border-t border-gray-100">
-                <a
+                <Link
                   href="/communitiy"
                   className="block w-full py-2 px-4 hover:bg-gray-100 text-[#5C0C99] text-center rounded-md transition-colors"
                 >
                   Create New Community
-                </a>
+                </Link>
               </div>
             </div>
           </div>

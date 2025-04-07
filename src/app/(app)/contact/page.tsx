@@ -10,9 +10,9 @@ import {
 } from "lucide-react";
 
 const ContactForm = () => {
-  if (localStorage.getItem("user")) {
-    window.location.href = "/home";
-  }
+  // if (localStorage.getItem("user")) {
+  //   window.location.href = "/home";
+  // }
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -50,6 +50,7 @@ const ContactForm = () => {
     emailjs
       .send("YOUR_SERVICE_ID", "YOUR_TEMPLATE_ID", formData, "YOUR_PUBLIC_KEY")
       .then((response) => {
+        console.log(response);
         setStatus({
           message: "Message sent successfully!",
           type: "success",

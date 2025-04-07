@@ -6,21 +6,33 @@ import { Skeleton } from "@/components/ui/skeleton";
 import CommunityCard from "@/components/general/CommunityCard";
 import { motion, AnimatePresence } from "framer-motion";
 import TodoRoute from "@/components/general/TodoRoute";
+import { useRouter } from "next/navigation";
 
 function CommunitiesPage() {
   const [openDialogBox, setOpenDialogBox] = useState(false);
   const [communities, setCommunities] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [isClient, setIsClient] = useState(false); // Fix for localStorage issue
   const [newCommunity, setNewCommunity] = useState({
     name: "",
     description: "",
     websiteUrl: "",
   });
 
-  if (!localStorage.getItem("user")) {
-    window.location.href = "/login";
-  }
+  const router = useRouter();
+
+  // Ensure localStorage is only accessed on the client side
+  useEffect(() => {
+    setIsClient(true);
+
+    if (typeof window !== "undefined") {
+      const user = localStorage.getItem("user");
+      if (!user) {
+        router.push("/login");
+      }
+    }
+  }, [router]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -35,9 +47,6 @@ function CommunitiesPage() {
     e.preventDefault();
     if (validateForm()) {
       try {
-        // Implement your community creation logic here
-        console.log("Creating community:", newCommunity);
-        // Reset form and close dialog
         const response = await axios.post(
           `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/community/communities`,
           newCommunity,
@@ -50,7 +59,6 @@ function CommunitiesPage() {
         );
         console.log(response.data.data);
 
-        // if(console.data.data)
         setNewCommunity({ name: "", description: "", websiteUrl: "" });
         setOpenDialogBox(false);
       } catch (error) {
@@ -71,11 +79,7 @@ function CommunitiesPage() {
             },
           }
         );
-        if (response.data.data.length === 0) {
-          setCommunities([]);
-        } else {
-          setCommunities(response.data.data);
-        }
+        setCommunities(response.data.data || []);
       } catch (error) {
         console.error("Failed to fetch communities", error);
       } finally {
@@ -90,6 +94,8 @@ function CommunitiesPage() {
   const filteredCommunities = communities.filter((community) =>
     community.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  if (!isClient) return null; // Prevent rendering on the server
 
   return (
     <div className="relative">
@@ -126,57 +132,45 @@ function CommunitiesPage() {
 
               {/* Community Name Input */}
               <div className="mb-4">
-                <label
-                  htmlFor="name"
-                  className="block text-sm font-medium text-gray-700 mb-2"
-                >
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Community Name
                 </label>
                 <input
                   type="text"
-                  id="name"
                   name="name"
                   value={newCommunity.name}
                   onChange={handleChange}
-                  className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 border-gray-300 focus:ring-[#480179] `}
+                  className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 border-gray-300 focus:ring-[#480179]"
                   placeholder="Enter community name"
                 />
               </div>
 
               {/* Description Input */}
               <div className="mb-4">
-                <label
-                  htmlFor="description"
-                  className="block text-sm font-medium text-gray-700 mb-2"
-                >
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Description
                 </label>
                 <textarea
-                  id="description"
                   name="description"
                   value={newCommunity.description}
                   onChange={handleChange}
                   rows={4}
-                  className={`w-full p-3 border border-gray-300 focus:ring-[#480179] rounded-lg focus:outline-none focus:ring-2 resize-none `}
+                  className="w-full p-3 border border-gray-300 focus:ring-[#480179] rounded-lg focus:outline-none focus:ring-2 resize-none"
                   placeholder="Describe your community"
                 />
               </div>
 
               {/* Website URL Input */}
               <div className="mb-6">
-                <label
-                  htmlFor="websiteUrl"
-                  className="block text-sm font-medium text-gray-700 mb-2"
-                >
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Website URL (Optional)
                 </label>
                 <input
                   type="text"
-                  id="websiteUrl"
                   name="websiteUrl"
                   value={newCommunity.websiteUrl}
                   onChange={handleChange}
-                  className={`w-full p-3 border border-gray-300 focus:ring-[#480179] rounded-lg focus:outline-none focus:ring-2 `}
+                  className="w-full p-3 border border-gray-300 focus:ring-[#480179] rounded-lg focus:outline-none focus:ring-2"
                   placeholder="https://example.com"
                 />
               </div>
@@ -184,7 +178,6 @@ function CommunitiesPage() {
               {/* Submit Button */}
               <button
                 type="submit"
-                onSubmit={handleSubmit}
                 className="w-full bg-[#480179] text-white py-3 rounded-lg hover:bg-[#5C0C99] transition-colors flex items-center justify-center"
               >
                 <Check className="mr-2" size={20} />
@@ -195,13 +188,12 @@ function CommunitiesPage() {
         )}
       </AnimatePresence>
 
-      {/* Rest of the existing component remains the same */}
       <div className="container mx-auto px-4 py-8 max-w-6xl">
         <div className="flex justify-between items-center mb-8">
           <div className="flex gap-4">
             <ArrowLeft
-              onClick={() => (window.location.href = "/home")}
-              className="w-8 h-8 object-cover text-gray-400"
+              onClick={() => router.push("/home")}
+              className="w-8 h-8 object-cover text-gray-400 cursor-pointer"
             />
             <h1 className="text-3xl font-bold text-gray-800">My Communities</h1>
           </div>
@@ -236,28 +228,11 @@ function CommunitiesPage() {
               <Skeleton key={index} className="h-48 w-full rounded-lg" />
             ))}
           </div>
-        ) : filteredCommunities.length > 0 ? (
+        ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {filteredCommunities.map((community) => (
-              <CommunityCard
-                key={community.id}
-                community={community}
-                //   className="transition-transform hover:scale-105 hover:shadow-lg"
-              />
+              <CommunityCard key={community.id} community={community} />
             ))}
-          </div>
-        ) : (
-          <div className="text-center py-12 bg-gray-50 rounded-lg">
-            <h2 className="text-xl text-gray-600">
-              {searchTerm
-                ? "No communities found matching your search"
-                : "You haven't joined any communities yet"}
-            </h2>
-            <p className="text-gray-500 mt-2">
-              {searchTerm
-                ? "Try a different search term"
-                : "Explore and join communities that interest you"}
-            </p>
           </div>
         )}
       </div>

@@ -1,15 +1,5 @@
 import React from "react";
-import {
-  Rocket,
-  BookOpen,
-  Target,
-  Shield,
-  Users,
-  Globe,
-  Mail,
-  MapPin,
-  Check,
-} from "lucide-react";
+import { BookOpen, Target, Shield, Users } from "lucide-react";
 
 const WhatweOffer = () => {
   const offerings = [

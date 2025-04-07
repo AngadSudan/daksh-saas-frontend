@@ -1,15 +1,5 @@
 import React from "react";
-import {
-  Rocket,
-  BookOpen,
-  Target,
-  Shield,
-  Users,
-  Globe,
-  Mail,
-  MapPin,
-  Check,
-} from "lucide-react";
+import { Rocket, Check } from "lucide-react";
 const WhoWeAre = () => {
   return (
     <div className="bg-[#1A0330] text-white py-16 px-4">
@@ -25,7 +15,7 @@ const WhoWeAre = () => {
             We are a team of tech enthusiasts, educators, and AI innovators
             passionate about redefining how education meets technology. By
             leveraging the power of AI, automation, and seamless integrations,
-            we're building a smart, intuitive, and powerful platform that
+            we&apos;re building a smart, intuitive, and powerful platform that
             enhances the learning experience for schools, colleges, and
             institutions worldwide.
           </p>

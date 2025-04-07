@@ -1,17 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import {
-  Rocket,
-  BookOpen,
-  Target,
-  Shield,
-  Users,
-  Globe,
-  Mail,
-  MapPin,
-  Check,
-  Play,
-} from "lucide-react";
+import { Rocket, Target, Play } from "lucide-react";
 
 const AboutHero = () => {
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);

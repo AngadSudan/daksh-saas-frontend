@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Trash2, Pin, Edit, X, Calendar, Info } from "lucide-react";
+import { Trash2, Pin, X, Calendar } from "lucide-react";
 import axios from "axios";
 
 // Mock data for demonstration

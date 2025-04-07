@@ -8,9 +8,9 @@ import Header from "@/components/Home/Header";
 import React from "react";
 
 function page() {
-  if (localStorage.getItem("user")) {
-    window.location.href = "/home";
-  }
+  // if (localStorage.getItem("user")) {
+  //   window.location.href = "/home";
+  // }
   return (
     <div>
       <Header />

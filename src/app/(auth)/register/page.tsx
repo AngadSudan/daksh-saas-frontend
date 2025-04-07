@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import authBg from "../../../../public/authBg.svg";
@@ -25,10 +25,11 @@ function Page() {
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
-
-  if (localStorage.getItem("user")) {
-    window.location.href = "/home";
-  }
+  useEffect(() => {
+    if (localStorage.getItem("user")) {
+      window.location.href = "/home";
+    }
+  }, []);
   const router = useRouter();
   const handleRegister = async () => {
     try {

@@ -1,14 +1,5 @@
 import React from "react";
-import {
-  Calendar,
-  FileText,
-  CheckCircle,
-  Rocket,
-  BookOpen,
-  Users,
-  Award,
-  Star,
-} from "lucide-react";
+import { Calendar, FileText, CheckCircle, Rocket } from "lucide-react";
 
 const LandingHero = () => {
   return (
