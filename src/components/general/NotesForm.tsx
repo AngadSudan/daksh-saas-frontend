@@ -46,8 +46,31 @@ function NotesForm({ onOpen, setOnOpen, chapterId }) {
     setNewNotes({ ...newNotes, [e.target.name]: e.target.value });
   };
 
-  const handleFileChange = (e) => {
-    setFile(e.target.files[0]); // Store the selected file
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+
+    if (!file) return;
+
+    const maxSize = 10 * 1024 * 1024; // 10 MB in bytes
+    const allowedTypes = [
+      "application/pdf",
+      "application/vnd.ms-powerpoint",
+      "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+    ];
+
+    if (!allowedTypes.includes(file.type)) {
+      alert("Only PDF and PPT/PPTX files are allowed.");
+      event.target.value = ""; // Clear input
+      return;
+    }
+
+    if (file.size > maxSize) {
+      alert("File size exceeds the 10 MB limit.");
+      event.target.value = ""; // Clear input
+      return;
+    }
+    setFile(event.target.files[0]);
+    console.log("Selected file:", file);
   };
 
   return (
@@ -98,7 +121,7 @@ function NotesForm({ onOpen, setOnOpen, chapterId }) {
                 value={newNotes.title}
                 onChange={handleChange}
                 className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 border-gray-300 focus:ring-[#480179]"
-                placeholder="Enter todo title"
+                placeholder="Enter notes title"
               />
             </div>
             <div className="mb-4">
@@ -115,7 +138,7 @@ function NotesForm({ onOpen, setOnOpen, chapterId }) {
                 value={newNotes.description}
                 onChange={handleChange}
                 className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 border-gray-300 focus:ring-[#480179]"
-                placeholder="Enter todo title"
+                placeholder="Enter notes description"
               />
             </div>
 
@@ -125,13 +148,14 @@ function NotesForm({ onOpen, setOnOpen, chapterId }) {
                 htmlFor="notes"
                 className="block text-sm font-medium text-gray-700 mb-2"
               >
-                Upload Notes (PDF/PPT)
+                Upload Notes (PDF/PPT 10 MB max)
               </label>
               <input
                 type="file"
                 id="notes"
                 name="notes"
                 accept=".pdf, .ppt, .pptx"
+                size={10 * 1024 * 1025}
                 onChange={handleFileChange}
                 className="w-full p-3 border rounded-lg border-gray-300 cursor-pointer"
               />

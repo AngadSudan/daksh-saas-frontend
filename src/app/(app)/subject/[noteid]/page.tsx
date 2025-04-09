@@ -21,9 +21,11 @@ function DocumentViewer() {
   const [error, setError] = useState(null);
   const [fileType, setFileType] = useState("");
 
-  if (!localStorage.getItem("user")) {
-    window.location.href = "/login";
-  }
+  useEffect(() => {
+    if (!localStorage.getItem("user")) {
+      window.location.href = "/login";
+    }
+  }, []);
   // Fetch note data
   useEffect(() => {
     const fetchNotes = async () => {

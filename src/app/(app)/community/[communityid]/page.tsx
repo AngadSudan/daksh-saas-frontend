@@ -40,9 +40,11 @@ function CommunitySubjectsPage() {
   const [notesUpload, setNotesUpload] = useState(false);
   // const [openDialogBox, setOpenDialogBox] = useState(false);
 
-  if (localStorage.getItem("user") === null) {
-    window.location.href = "/login";
-  }
+  useEffect(() => {
+    if (localStorage.getItem("user") === null) {
+      window.location.href = "/login";
+    }
+  }, []);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -397,7 +399,6 @@ function CommunitySubjectsPage() {
 
               <button
                 onClick={() => {
-                  alert("uploading clicked");
                   setNotesUpload(true);
                 }}
                 className="flex gap-4 w-fit justify-center items-center mx-auto bg-[#480179] text-white py-2 mb-3 px-6 rounded-md "

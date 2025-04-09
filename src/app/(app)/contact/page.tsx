@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import emailjs from "@emailjs/browser";
 import {
   Mail,
@@ -10,9 +10,11 @@ import {
 } from "lucide-react";
 
 const ContactForm = () => {
-  // if (localStorage.getItem("user")) {
-  //   window.location.href = "/home";
-  // }
+  useEffect(() => {
+    if (localStorage.getItem("user")) {
+      window.location.href = "/home";
+    }
+  }, []);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
