@@ -1,5 +1,5 @@
 import React from "react";
-import { Globe, Users, ChevronRight } from "lucide-react";
+import { Users, Globe, Calendar, ExternalLink } from "lucide-react";
 import { motion } from "framer-motion";
 
 const CommunityCard = ({ community }) => {
@@ -7,79 +7,90 @@ const CommunityCard = ({ community }) => {
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",
-      month: "long",
+      month: "short",
       day: "numeric",
     });
   };
 
+  const navigateToCommunity = () => {
+    window.location.href = `/community/${community.id}`;
+  };
+
   return (
     <motion.div
-      whileHover={{ scale: 1.03 }}
-      whileTap={{ scale: 0.97 }}
-      onClick={() => {
-        window.location.href = `/community/${community.id}`;
+      whileHover={{
+        y: -4,
+        boxShadow:
+          "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
       }}
-      className="cursor-pointer w-full max-w-xl mx-auto bg-gradient-to-br from-[#2C054A] to-[#5C0C99] rounded-3xl shadow-2xl overflow-hidden relative"
+      transition={{ duration: 0.2 }}
+      className="w-full max-w-md rounded-xl overflow-hidden shadow-sm border border-gray-100 bg-white hover:border-purple-100"
+      onClick={navigateToCommunity}
+      style={{ cursor: "pointer" }}
     >
-      {/* Subtle glowing effect */}
-      <div className="absolute inset-0 bg-purple-600/10 blur-3xl opacity-50 pointer-events-none"></div>
+      {/* Top accent line */}
+      <div className="h-1.5 w-full bg-gradient-to-r from-purple-500 via-indigo-500 to-blue-500" />
 
-      <div className="p-6 bg-white/5 backdrop-blur-lg relative z-10">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-5">
-            <div className="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center shadow-inner">
-              <Users className="w-10 h-10 text-white/80" />
-            </div>
-            <div>
-              <h2 className="text-2xl font-bold text-white tracking-wide">
-                {community.name.toUpperCase()}
-              </h2>
-            </div>
+      <div className="p-6">
+        <div className="flex items-center">
+          <div className="bg-gradient-to-br from-purple-100 to-indigo-50 p-3 rounded-xl shadow-sm">
+            <Users className="h-6 w-6 text-purple-600" />
           </div>
-
-          {/* Right Arrow */}
-          <motion.div
-            whileHover={{ x: 5 }}
-            className="text-white/70 hover:text-white transition-colors"
-          >
-            <ChevronRight className="w-10 h-10" />
-          </motion.div>
+          <div className="ml-4">
+            <h2 className="font-bold text-xl text-gray-800 tracking-tight">
+              {community.name}
+            </h2>
+            <p className="text-xs text-gray-500 flex items-center mt-1">
+              <Calendar className="h-3 w-3 mr-1" />
+              Created {formatDate(community.createdAt)}
+            </p>
+          </div>
         </div>
 
-        <div className="space-y-4 mt-6 text-white/90">
-          <p className="text-base leading-relaxed">
-            {community.description || "No description available"}
-          </p>
+        <div className="mt-5 text-gray-600 text-sm leading-relaxed">
+          <p>{community.description || "No description available"}</p>
+        </div>
 
-          {community.websiteUrl && (
-            <div className="flex items-center space-x-3 bg-white/5 p-3 rounded-xl">
-              <Globe className="w-5 h-5 text-white/70" />
-              <a
-                href={community.websiteUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-base hover:text-white transition-colors truncate flex-grow"
+        {community.websiteUrl && (
+          <motion.a
+            href={community.websiteUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-5 flex items-center text-sm text-indigo-600 hover:text-indigo-700 bg-indigo-50 hover:bg-indigo-100 p-3 rounded-lg transition-colors"
+            onClick={(e) => e.stopPropagation()}
+            whileHover={{ scale: 1.01 }}
+          >
+            <Globe className="w-4 h-4 mr-2 flex-shrink-0" />
+            <span className="truncate">{community.websiteUrl}</span>
+            <ExternalLink className="w-3 h-3 ml-2 flex-shrink-0" />
+          </motion.a>
+        )}
+
+        <div className="mt-6 pt-4 border-t border-gray-100">
+          <div className="flex justify-between items-center">
+            <motion.button
+              whileHover={{ x: 3 }}
+              className="text-indigo-600 font-medium text-sm flex items-center group"
+            >
+              View Community Details
+              <svg
+                className="ml-1 h-5 w-5 transition-transform duration-200 transform group-hover:translate-x-1"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
               >
-                {community.websiteUrl}
-              </a>
-            </div>
-          )}
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 5l7 7-7 7"
+                />
+              </svg>
+            </motion.button>
 
-          <div className="border-t border-white/20 pt-4 mt-4">
-            <div className="grid grid-cols-2 gap-3 text-sm">
-              <div className="flex flex-col">
-                <span className="text-white/60 mb-1">Created</span>
-                <span className="text-white font-medium">
-                  {formatDate(community.createdAt)}
-                </span>
-              </div>
-              <div className="flex flex-col items-end">
-                <span className="text-white/60 mb-1">Last Updated</span>
-                <span className="text-white font-medium">
-                  {formatDate(community.updatedAt)}
-                </span>
-              </div>
-            </div>
+            <span className="text-xs text-gray-400">
+              Updated {formatDate(community.updatedAt)}
+            </span>
           </div>
         </div>
       </div>

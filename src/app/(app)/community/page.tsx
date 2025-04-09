@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Search, PlusCircle, X, Check, ArrowLeft } from "lucide-react";
+import { Search, PlusCircle, Users, X, Check, ArrowLeft } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import CommunityCard from "@/components/general/CommunityCard";
 import { motion, AnimatePresence } from "framer-motion";
@@ -223,16 +223,50 @@ function CommunitiesPage() {
 
         {/* Communities Grid */}
         {isLoading ? (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {[1, 2, 3, 4].map((_, index) => (
-              <Skeleton key={index} className="h-48 w-full rounded-lg" />
+              <div key={index} className="bg-white rounded-lg shadow-md p-6">
+                <div className="flex items-center mb-4">
+                  <Skeleton className="h-12 w-12 rounded-full" />
+                  <div className="ml-4 space-y-2">
+                    <Skeleton className="h-5 w-40" />
+                    <Skeleton className="h-4 w-24" />
+                  </div>
+                </div>
+                <Skeleton className="h-20 w-full mb-4" />
+                <div className="flex justify-between">
+                  <Skeleton className="h-8 w-32" />
+                  <Skeleton className="h-8 w-8 rounded-full" />
+                </div>
+              </div>
             ))}
           </div>
-        ) : (
+        ) : filteredCommunities.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {filteredCommunities.map((community) => (
               <CommunityCard key={community.id} community={community} />
             ))}
+          </div>
+        ) : (
+          <div className="text-center py-16 bg-white rounded-lg shadow-sm">
+            <div className="mx-auto w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mb-4">
+              <Users className="w-8 h-8 text-[#480179]" />
+            </div>
+            <h3 className="text-xl font-semibold text-gray-700 mb-2">
+              No communities found
+            </h3>
+            <p className="text-gray-500 mb-6">
+              {searchTerm
+                ? "Try a different search term"
+                : "Create your first community to get started"}
+            </p>
+            <button
+              onClick={() => setOpenDialogBox(true)}
+              className="flex items-center bg-[#480179] text-white px-4 py-2 rounded-lg hover:bg-[#5C0C99] transition-colors mx-auto"
+            >
+              <PlusCircle className="mr-2" size={20} />
+              Create New Community
+            </button>
           </div>
         )}
       </div>

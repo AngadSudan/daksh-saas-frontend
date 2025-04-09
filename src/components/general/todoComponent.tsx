@@ -36,6 +36,7 @@ const TodoCard = ({ todo = todoExample, onUpdate, onDelete }) => {
 
     const response = await axios.put(
       `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/todo/toggle-completion-status/${todo.id}`,
+      {},
       {
         withCredentials: true,
         headers: {
@@ -45,9 +46,10 @@ const TodoCard = ({ todo = todoExample, onUpdate, onDelete }) => {
     );
 
     console.log(response);
-    if (onUpdate) {
-      onUpdate({ ...todo, status: newStatus });
-    }
+    window.location.reload();
+    // if (onUpdate) {
+    //   onUpdate({ ...todo, status: newStatus });
+    // }
   };
 
   // Toggle pin status
@@ -56,18 +58,20 @@ const TodoCard = ({ todo = todoExample, onUpdate, onDelete }) => {
 
     const response = await axios.put(
       `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/todo/toggle-pin-status/${todo.id}`,
+      {},
       {
-        withCredentials: true,
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("user")}`,
+          Authorization: `Bearer ${localStorage.getItem("user") || ""}`,
         },
+        withCredentials: true,
       }
     );
     console.log(response);
-    const newPinned = todo.pinned === "PINNED" ? "UNPINNED" : "PINNED";
-    if (onUpdate) {
-      onUpdate({ ...todo, pinned: newPinned });
-    }
+    window.location.reload();
+    // const newPinned = todo.pinned === "PINNED" ? "UNPINNED" : "PINNED";
+    // if (onUpdate) {
+    //   onUpdate({ ...todo, pinned: newPinned });
+    // }
   };
 
   // Handle delete

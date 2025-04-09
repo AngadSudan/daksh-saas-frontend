@@ -47,6 +47,7 @@ function TodoList() {
             },
           }
         );
+        console.log(response.data.data);
         setTodos(response.data.data);
         setFilteredTodos(response.data.data);
       } catch (error) {
