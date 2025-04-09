@@ -37,7 +37,7 @@ function Page() {
   };
 
   const validateForm = () => {
-    let newErrors = { name: "", email: "", password: "" };
+    const newErrors = { name: "", email: "", password: "" };
     if (!formData.name.trim()) newErrors.name = "Full name is required.";
     if (!formData.email.trim()) newErrors.email = "Email is required.";
     if (!formData.password.trim() || formData.password.length < 6)
