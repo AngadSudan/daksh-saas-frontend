@@ -31,7 +31,7 @@ const TodoCard = ({ todo = todoExample, onUpdate, onDelete }) => {
 
   // Toggle status between PENDING and COMPLETED
   const toggleStatus = async () => {
-    const newStatus = todo.status === "PENDING" ? "COMPLETED" : "PENDING";
+    // const newStatus = todo.status === "PENDING" ? "COMPLETED" : "PENDING";
     // /toggle-completion-status/:todoid
 
     const response = await axios.put(

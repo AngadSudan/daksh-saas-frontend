@@ -167,7 +167,7 @@ function NotesForm({ onOpen, setOnOpen, chapterId }) {
               className="w-full bg-[#480179] text-white py-3 rounded-lg hover:bg-[#5C0C99] transition-colors flex items-center justify-center"
             >
               <Check className="mr-2" size={20} />
-              List Todo
+              List Notes
             </button>
           </motion.form>
         </motion.div>
