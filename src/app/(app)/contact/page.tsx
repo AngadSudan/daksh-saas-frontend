@@ -1,25 +1,19 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import emailjs from "@emailjs/browser";
-import {
-  Mail,
-  User,
-  MessageSquare,
-  Send,
-  Image as ImageIcon,
-} from "lucide-react";
-
+import { ArrowLeft } from "lucide-react";
+import Image from "next/image";
+import bg from "../../../../public/contactBg.svg";
+import character from "../../../../public/contactFig.svg";
 const ContactForm = () => {
-  useEffect(() => {
-    if (localStorage.getItem("user")) {
-      window.location.href = "/home";
-    }
-  }, []);
   const [formData, setFormData] = useState({
-    name: "",
+    firstName: "",
+    lastName: "",
     email: "",
     message: "",
   });
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [status, setStatus] = useState({
     message: "",
     type: "",
@@ -40,7 +34,12 @@ const ContactForm = () => {
     setStatus({ message: "", type: "" });
 
     // Basic form validation
-    if (!formData.name || !formData.email || !formData.message) {
+    if (
+      !formData.firstName ||
+      !formData.lastName ||
+      !formData.email ||
+      !formData.message
+    ) {
       setStatus({
         message: "Please fill in all fields",
         type: "error",
@@ -48,9 +47,33 @@ const ContactForm = () => {
       return;
     }
 
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      setStatus({
+        message: "Please enter a valid email address",
+        type: "error",
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    // Prepare data for EmailJS
+    const templateParams = {
+      name: `${formData.firstName} ${formData.lastName}`,
+      email: formData.email,
+      message: formData.message,
+    };
+
     // EmailJS send method
     emailjs
-      .send("YOUR_SERVICE_ID", "YOUR_TEMPLATE_ID", formData, "YOUR_PUBLIC_KEY")
+      .send(
+        "YOUR_SERVICE_ID",
+        "YOUR_TEMPLATE_ID",
+        templateParams,
+        "YOUR_PUBLIC_KEY"
+      )
       .then((response) => {
         console.log(response);
         setStatus({
@@ -59,7 +82,8 @@ const ContactForm = () => {
         });
         // Reset form after successful submission
         setFormData({
-          name: "",
+          firstName: "",
+          lastName: "",
           email: "",
           message: "",
         });
@@ -70,159 +94,141 @@ const ContactForm = () => {
           type: "error",
         });
         console.error("EmailJS Error:", error);
+      })
+      .finally(() => {
+        setIsSubmitting(false);
       });
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#1A0330] via-[#480179] to-[#5705BC] flex items-center justify-center px-4 py-12">
-      <div
-        className="
-        w-full max-w-5xl 
-        bg-white/10 
-        backdrop-blur-lg 
-        rounded-3xl 
-        shadow-2xl 
-        overflow-hidden 
-        grid md:grid-cols-2 
-        gap-8 
-        border border-white/20
-      "
-      >
-        {/* Image Placeholder Section */}
-        <div
-          className="
-          hidden md:flex 
-          items-center 
-          justify-center 
-          bg-gradient-to-br 
-          from-[#480179] 
-          to-[#5705BC] 
-          relative
-        "
-        >
-          <div
-            className="
-            absolute 
-            inset-0 
-            bg-[#5705BC]/20 
-            backdrop-blur-sm
-          "
-          ></div>
-          <div
-            className="
-            z-10 
-            text-center 
-            text-white 
-            flex 
-            flex-col 
-            items-center 
-            space-y-4 
-            p-8
-          "
-          >
-            <ImageIcon className="w-32 h-32 text-white/50" />
-            <h3 className="text-2xl font-bold">Your Image Goes Here</h3>
-            <p className="text-white/70 text-center">
-              This space is reserved for a relevant image or graphic that
-              complements your contact form design.
-            </p>
+    <div
+      className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-400 to-indigo-600 p-4"
+      style={{
+        backgroundImage: `url(${bg.src})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
+      <div className="max-w-6xl w-full flex flex-col md:flex-row rounded-xl overflow-hidden shadow-xl border-2 border-gray-300">
+        {/* Character Section */}
+        <div className="md:w-1/2 bg-gradient-to-br  p-6 flex items-center justify-center relative">
+          <div className="w-full h-full flex items-center justify-center">
+            {/* Replace with your actual 3D character image */}
+            {/* <div className="relative w-64 h-64"> */}
+            <Image
+              src={character}
+              alt="3D character sitting on clouds"
+              width={400}
+              height={400}
+              className="hidden md:block object-contain"
+            />
+            {/* </div> */}
           </div>
         </div>
 
-        {/* Contact Form Section */}
-        <div className="p-8 flex flex-col justify-center">
-          <h2 className="text-4xl font-bold text-white mb-8 text-center">
-            Contact Us
-          </h2>
+        {/* Form Section */}
+        <div className="md:w-1/2 bg-white p-8 md:p-12">
+          <div className="text-center md:text-left mb-8">
+            <div className="flex gap-5">
+              <ArrowLeft
+                onClick={() => (window.location.href = "/")}
+                className="w-10 h-10 my-auto text-gray-400"
+              />
+              <h2 className="text-3xl font-bold text-gray-800">
+                Get in Touch.
+              </h2>
+            </div>
+            <p className="text-gray-600 mt-2">
+              Fill out the form below and we&apos;ll get back to you as soon as
+              possible
+            </p>
+          </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Name Input */}
-            <div className="relative group">
-              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                <User className="text-purple-300 group-focus-within:text-white transition-colors" />
+            {/* Name Inputs - Two Column */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label
+                  htmlFor="firstName"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  First Name
+                </label>
+                <input
+                  type="text"
+                  id="firstName"
+                  name="firstName"
+                  value={formData.firstName}
+                  onChange={handleChange}
+                  placeholder="First Name"
+                  className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-purple-500"
+                />
               </div>
-              <input
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                placeholder="Your Name"
-                className="
-                  w-full pl-12 pr-4 py-4 
-                  bg-white/10 text-white 
-                  placeholder-purple-300 
-                  rounded-xl 
-                  focus:outline-none 
-                  focus:ring-2 
-                  focus:ring-white/30
-                  group-focus-within:ring-2
-                  transition-all
-                "
-              />
+              <div>
+                <label
+                  htmlFor="lastName"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Last Name
+                </label>
+                <input
+                  type="text"
+                  id="lastName"
+                  name="lastName"
+                  value={formData.lastName}
+                  onChange={handleChange}
+                  placeholder="Last Name"
+                  className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-purple-500"
+                />
+              </div>
             </div>
 
             {/* Email Input */}
-            <div className="relative group">
-              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                <Mail className="text-purple-300 group-focus-within:text-white transition-colors" />
-              </div>
+            <div>
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Mail
+              </label>
               <input
                 type="email"
+                id="email"
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                placeholder="Your Email"
-                className="
-                  w-full pl-12 pr-4 py-4 
-                  bg-white/10 text-white 
-                  placeholder-purple-300 
-                  rounded-xl 
-                  focus:outline-none 
-                  focus:ring-2 
-                  focus:ring-white/30
-                  group-focus-within:ring-2
-                  transition-all
-                "
+                placeholder="your@email.com"
+                className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-purple-500"
               />
             </div>
 
             {/* Message Textarea */}
-            <div className="relative group">
-              <div className="absolute top-4 left-0 pl-4 pointer-events-none">
-                <MessageSquare className="text-purple-300 group-focus-within:text-white transition-colors" />
-              </div>
+            <div>
+              <label
+                htmlFor="message"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Message
+              </label>
               <textarea
+                id="message"
                 name="message"
                 value={formData.message}
                 onChange={handleChange}
-                placeholder="Your Message"
-                // rows="5"
-                className="
-                  w-full pl-12 pr-4 py-4 
-                  bg-white/10 text-white 
-                  placeholder-purple-300 
-                  rounded-xl 
-                  focus:outline-none 
-                  focus:ring-2 
-                  resize-none
-                  focus:ring-white/30
-                  group-focus-within:ring-2
-                  transition-all
-                "
+                placeholder="Your message here..."
+                rows={4}
+                className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none"
               />
             </div>
 
             {/* Status Message */}
             {status.message && (
               <div
-                className={`
-                  p-4 rounded-xl text-center
-                  ${
-                    status.type === "success"
-                      ? "bg-green-500/20 text-green-300"
-                      : "bg-red-500/20 text-red-300"
-                  }
-                `}
+                className={`p-3 rounded text-sm ${
+                  status.type === "success"
+                    ? "bg-green-50 text-green-700 border border-green-200"
+                    : "bg-red-50 text-red-700 border border-red-200"
+                }`}
               >
                 {status.message}
               </div>
@@ -231,20 +237,19 @@ const ContactForm = () => {
             {/* Submit Button */}
             <button
               type="submit"
-              className="
-                w-full bg-white text-[#5705BC] 
-                py-4 rounded-xl 
-                font-semibold 
-                hover:bg-purple-100 
-                transition duration-300 
-                flex items-center 
-                justify-center 
-                space-x-3
-                group
-              "
+              disabled={isSubmitting}
+              className="w-full bg-purple-600 text-white py-3 px-6 rounded-md font-medium hover:bg-purple-700 transition duration-300 flex items-center justify-center"
             >
-              <Send className="w-6 h-6 group-hover:rotate-6 transition-transform" />
-              <span>Send Message</span>
+              {isSubmitting ? (
+                <div className="flex items-center space-x-2">
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                  <span>Sending...</span>
+                </div>
+              ) : (
+                <>
+                  <span>Send Message</span>
+                </>
+              )}
             </button>
           </form>
         </div>

@@ -7,6 +7,7 @@ import WhatweOffer from "@/components/About/WhatweOffer";
 import WhoWeAre from "@/components/About/WhoWeAre";
 import WhyUs from "@/components/About/WhyUs";
 import Header from "@/components/Home/Header";
+import Footer from "@/components/Home/Footer";
 
 function Page() {
   useEffect(() => {
@@ -23,6 +24,7 @@ function Page() {
       <WhyUs />
       <Vision />
       <JoinUs />
+      <Footer />
     </div>
   );
 }
