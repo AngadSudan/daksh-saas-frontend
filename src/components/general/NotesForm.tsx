@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Check } from "lucide-react";
 import axios from "axios";
-
+import { toast, Toaster } from "react-hot-toast";
 function NotesForm({ onOpen, setOnOpen, chapterId }) {
   console.log(onOpen);
   const [newNotes, setNewNotes] = useState({
@@ -35,6 +35,11 @@ function NotesForm({ onOpen, setOnOpen, chapterId }) {
           },
         }
       );
+      if (response.data.error) {
+        toast.error(response.data.message);
+      } else {
+        toast.success(response.data.message);
+      }
       console.log("File uploaded successfully:", response.data.data);
       setOnOpen(false);
     } catch (error) {
@@ -76,6 +81,7 @@ function NotesForm({ onOpen, setOnOpen, chapterId }) {
   return (
     <div>
       <AnimatePresence>
+        <Toaster />
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}

@@ -7,7 +7,7 @@ import CommunityCard from "@/components/general/CommunityCard";
 import { motion, AnimatePresence } from "framer-motion";
 import TodoRoute from "@/components/general/TodoRoute";
 import { useRouter } from "next/navigation";
-
+import { toast, Toaster } from "react-hot-toast";
 function CommunitiesPage() {
   const [openDialogBox, setOpenDialogBox] = useState(false);
   const [communities, setCommunities] = useState([]);
@@ -57,6 +57,11 @@ function CommunitiesPage() {
             },
           }
         );
+        if (response.data.error) {
+          toast.error(response.data.message);
+        } else {
+          toast.success(response.data.message);
+        }
         console.log(response.data.data);
 
         setNewCommunity({ name: "", description: "", websiteUrl: "" });
@@ -80,6 +85,11 @@ function CommunitiesPage() {
           }
         );
         setCommunities(response.data.data || []);
+        if (response.data.error) {
+          toast.error(response.data.message);
+        } else {
+          toast.success("community fetched");
+        }
       } catch (error) {
         console.error("Failed to fetch communities", error);
       } finally {
@@ -100,6 +110,7 @@ function CommunitiesPage() {
   return (
     <div className="relative">
       <TodoRoute />
+      <Toaster />
       <AnimatePresence>
         {openDialogBox && (
           <motion.div

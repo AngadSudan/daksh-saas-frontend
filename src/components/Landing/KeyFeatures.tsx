@@ -1,46 +1,80 @@
 import React from "react";
-import { Calendar, FileText, Award } from "lucide-react";
-const KeyFeatures = () => {
+import Image from "next/image";
+import f1 from "../../../public/feature1.svg";
+import f2 from "../../../public/feature2.svg";
+// import f3 from "../../../public/feature3.svg";
+import f4 from "../../../public/feature4.svg";
+import f5 from "../../../public/feature5.svg";
+function Features() {
   const features = [
     {
-      icon: <FileText className="text-[#5705BC] w-12 h-12" />,
-      title: "AI-Powered Document Summarization",
+      img: f1,
+      heading: "Multiple Community Creation",
       description:
-        "Instantly generate concise yet rich summaries of long PDFs & PPTs",
+        "Easily create and join diverse communities to share resources and collaborate effectively.",
     },
     {
-      icon: <Award className="text-[#5705BC] w-12 h-12" />,
-      title: "Smart Quiz & Exam Preparation",
+      img: f2,
+      heading: "Multiple Chapters & Subjects",
       description:
-        "AI-powered quiz generation with single and multiple-choice questions",
+        "Organize your content effortlessly by creating unlimited chapters and subjects.",
     },
     {
-      icon: <Calendar className="text-[#5705BC] w-12 h-12" />,
-      title: "Calendar & Notion Integration",
-      description: "Automatic sync and task reminders for better planning",
+      img: f4,
+      heading: "Embedded Notes Application",
+      description:
+        "Access and annotate your PPTX and PDFs directly on the web with an integrated AI assistant.",
+    },
+    {
+      img: f5,
+      heading: "Powerful Todos and Task Management",
+      description:
+        "Streamline your workflow with advanced task management and collaboration tools.",
     },
   ];
-
   return (
-    <div className="bg-[#1A0330] text-white py-16 px-4">
-      <div className="max-w-6xl mx-auto">
-        <h2 className="text-3xl font-bold text-center mb-12">Key Features</h2>
-        <div className="grid md:grid-cols-3 gap-8">
-          {features.map((feature, index) => (
-            <div
+    <div>
+      <h1 className="text-center text-[54px] text-[#1A1A1A] ">
+        Revolutionize Your Hiring with
+        <br />
+        AI- Driven Precision
+      </h1>
+      <p className="text-center text-[#6A6A6A] mb-4 text-[18px]">
+        Leverage intelligent automation and AI-powered tools to simplify
+        recruitment and find <br /> the perfect candidates faster.
+      </p>
+      <div className="max-w-7xl gap-y-4 mx-auto grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-2 mt-8">
+        {features.map((feature, index) => {
+          return (
+            <FeatureCard
               key={index}
-              className="bg-[#480179] p-6 rounded-lg shadow-lg hover:scale-105 transition duration-300"
-            >
-              <div className="flex justify-center mb-4">{feature.icon}</div>
-              <h3 className="text-xl font-semibold text-center mb-4">
-                {feature.title}
-              </h3>
-              <p className="text-center text-gray-300">{feature.description}</p>
-            </div>
-          ))}
-        </div>
+              img={feature.img}
+              heading={feature.heading}
+              description={feature.description}
+            />
+          );
+        })}
       </div>
     </div>
   );
+}
+
+const FeatureCard = ({ img, heading, description }) => {
+  return (
+    <div className=" flex flex-col p-4 rounded-[20px] bg-[#F3F3F1] border-[1px] border-[#E3E3E3]">
+      <Image
+        src={img}
+        alt="feature-image"
+        className="w-[753px] object-cover md:object-contain h-[265px] mb-4 border-[1px] border-[#5417A3] rounded-[10px]"
+      />
+      <h1 className="text-[#1A1A1A] ml-4  text-left font-[400] text-[30px]">
+        {heading}
+      </h1>
+      <p className="text-[#6A6A6A] ml-4 mb-4 text-left w-[80%]">
+        {description}
+      </p>
+    </div>
+  );
 };
-export default KeyFeatures;
+
+export default Features;

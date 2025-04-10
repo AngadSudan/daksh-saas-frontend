@@ -14,7 +14,7 @@ import {
   Clock,
   AlertCircle,
 } from "lucide-react";
-
+import { toast, Toaster } from "react-hot-toast";
 function TodoList() {
   const [todos, setTodos] = useState([]);
   const [filteredTodos, setFilteredTodos] = useState([]);
@@ -48,12 +48,18 @@ function TodoList() {
           }
         );
         console.log(response.data.data);
+        if (response.data.error) {
+          toast.error(response.data.message);
+        } else {
+          toast.success(response.data.message);
+        }
         setTodos(response.data.data);
         setFilteredTodos(response.data.data);
       } catch (error) {
         console.error("Failed to load todos:", error);
       } finally {
         setIsLoading(false);
+        // toast.success("Todos loaded successfully!");
       }
     };
     loadTodos();
@@ -86,7 +92,10 @@ function TodoList() {
 
   const handleUpdate = async (updatedTodo) => {
     try {
-      await axios.put(
+      setTodos((prev) =>
+        prev.map((todo) => (todo.id === updatedTodo.id ? updatedTodo : todo))
+      );
+      const response = await axios.put(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/todo/update-todo/${updatedTodo.id}`,
         {
           title: updatedTodo.title,
@@ -101,9 +110,11 @@ function TodoList() {
           },
         }
       );
-      setTodos((prev) =>
-        prev.map((todo) => (todo.id === updatedTodo.id ? updatedTodo : todo))
-      );
+      if (response.data.error) {
+        toast.error(response.data.message);
+      } else {
+        toast.success(response.data.message);
+      }
     } catch (error) {
       console.error("Failed to update todo:", error);
     }
@@ -124,7 +135,11 @@ function TodoList() {
           },
         }
       );
-
+      if (response.data.error) {
+        toast.error(response.data.message);
+      } else {
+        toast.success(response.data.message);
+      }
       setTodos((prev) => [...prev, response.data.data]);
       setAddTodo(false);
       setNewTodo({
@@ -140,7 +155,8 @@ function TodoList() {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(
+      setTodos((prev) => prev.filter((todo) => todo.id !== id));
+      const response = await axios.delete(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/todo/set-visibility-hidden/${id}`,
         {
           headers: {
@@ -148,7 +164,12 @@ function TodoList() {
           },
         }
       );
-      setTodos((prev) => prev.filter((todo) => todo.id !== id));
+
+      if (response.data.error) {
+        toast.error(response.data.message);
+      } else {
+        toast.success("todo deleted");
+      }
     } catch (error) {
       console.error("Failed to delete todo:", error);
     }
@@ -156,6 +177,7 @@ function TodoList() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <Toaster />
       <AnimatePresence>
         {addTodo && (
           <motion.div

@@ -1,105 +1,185 @@
 import React from "react";
-import {
-  Facebook,
-  Twitter,
-  Instagram,
-  Linkedin,
-  Mail,
-  MapPin,
-  Phone,
-} from "lucide-react";
+import { Mail, MapPin, Phone, ArrowRight } from "lucide-react";
+import logo from "../../../public/logo.png";
+import Image from "next/image";
+import Link from "next/link";
 
 const Footer = () => {
   const quickLinks = [
-    { title: "Product", links: ["Features", "Pricing", "Integrations"] },
-    { title: "Company", links: ["About Us", "Careers", "Press"] },
-    { title: "Resources", links: ["Blog", "Help Center", "Documentation"] },
-    { title: "Legal", links: ["Terms", "Privacy", "Cookies"] },
+    {
+      title: "Product",
+      links: [
+        { name: "Home", href: "/" },
+        { name: "About Us", href: "/about" },
+        { name: "Contact", href: "/contact" },
+      ],
+    },
+    {
+      title: "Get Started",
+      links: [
+        { name: "Login", href: "/login" },
+        { name: "Register", href: "/register" },
+      ],
+    },
   ];
 
-  const socialLinks = [
-    { icon: <Facebook className="w-6 h-6" />, href: "#" },
-    { icon: <Twitter className="w-6 h-6" />, href: "#" },
-    { icon: <Instagram className="w-6 h-6" />, href: "#" },
-    { icon: <Linkedin className="w-6 h-6" />, href: "#" },
-  ];
+  // const socialLinks = [
+  //   { icon: <Facebook className="w-5 h-5" />, href: "#", label: "Facebook" },
+  //   { icon: <Twitter className="w-5 h-5" />, href: "#", label: "Twitter" },
+  //   { icon: <Instagram className="w-5 h-5" />, href: "#", label: "Instagram" },
+  //   { icon: <Linkedin className="w-5 h-5" />, href: "#", label: "LinkedIn" },
+  // ];
 
   return (
-    <footer className="bg-[#1A0330] text-white py-16 px-4">
-      <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-12">
-        {/* Brand Section */}
-        <div className="space-y-6">
-          <div className="flex items-center space-x-3">
-            <div className="bg-[#5705BC] p-2 rounded-full">
-              <MapPin className="w-8 h-8 text-white" />
+    <footer className="bg-gradient-to-br from-[#1A0330] to-[#290747] text-white py-8 px-4">
+      <div className="max-w-7xl mx-auto">
+        {/* Main Footer Content */}
+        <div className="grid md:grid-cols-3 gap-12 mb-16">
+          {/* Brand Section */}
+          <div className="space-y-6">
+            <div className="flex items-center space-x-3 mb-6">
+              <Image
+                src={logo}
+                alt="logo"
+                className="w-40 h-40 object-contain"
+              />
+
+              <h2 className="text-3xl font-bold bg-gradient-to-r from-white to-[#A57EED] bg-clip-text text-transparent">
+                Daksh
+              </h2>
             </div>
-            <h2 className="text-2xl font-bold">Daksh</h2>
+            <p className="text-gray-300 text-lg">
+              Revolutionizing learning through AI-powered tools, seamless
+              integrations, and intelligent task management.
+            </p>
+            {/* <div className="flex space-x-3 mt-8">
+              {socialLinks.map((social, index) => (
+                <Link
+                  key={index}
+                  href={social.href}
+                  aria-label={social.label}
+                  className="text-white hover:text-[#5705BC] transition duration-300 bg-[#480179] p-2.5 rounded-xl hover:bg-white hover:shadow-lg hover:shadow-[#5705BC]/20"
+                >
+                  {social.icon}
+                </Link>
+              ))}
+            </div> */}
           </div>
-          <p className="text-gray-300">
-            Revolutionizing learning through AI-powered tools, seamless
-            integrations, and intelligent task management.
-          </p>
-          <div className="flex space-x-4">
-            {socialLinks.map((social, index) => (
-              <a
-                key={index}
-                href={social.href}
-                className="text-white hover:text-[#5705BC] transition duration-300 bg-[#480179] p-3 rounded-full hover:bg-[#5705BC]/20"
-              >
-                {social.icon}
-              </a>
+
+          {/* Quick Links Section */}
+          <div className="grid grid-cols-2 gap-8">
+            {quickLinks.map((section, index) => (
+              <div key={index}>
+                <h3 className="font-semibold text-xl mb-6 text-[#A57EED]">
+                  {section.title}
+                </h3>
+                <ul className="space-y-4">
+                  {section.links.map((link, linkIndex) => (
+                    <li key={linkIndex}>
+                      <Link
+                        href={link.href}
+                        className="text-gray-300 hover:text-white flex items-center group"
+                      >
+                        <span className="group-hover:translate-x-1 transition-transform duration-300">
+                          {link.name}
+                        </span>
+                        <ArrowRight className="w-4 h-4 ml-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             ))}
           </div>
-        </div>
 
-        {/* Quick Links Section */}
-        <div className="grid grid-cols-2 gap-8">
-          {quickLinks.map((section, index) => (
-            <div key={index}>
-              <h3 className="font-semibold text-xl mb-4 text-[#5705BC]">
-                {section.title}
-              </h3>
-              <ul className="space-y-2">
-                {section.links.map((link, linkIndex) => (
-                  <li key={linkIndex}>
-                    <a
-                      href="#"
-                      className="text-gray-300 hover:text-white hover:translate-x-1 transition duration-300"
-                    >
-                      {link}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
+          {/* Contact Section */}
+          <div className="space-y-3">
+            <h3 className="font-semibold text-xl text-[#A57EED] mb-6">
+              Get in Touch
+            </h3>
+            <div className="space-y-5">
+              <Link
+                href="mailto:angadsudan453@gmail.com"
+                className="flex items-center space-x-4 group"
+              >
+                <Mail className="w-7 h-7 text-[#fff] group-hover:text-[#5705BC]" />
 
-        {/* Contact Section */}
-        <div className="space-y-6">
-          <h3 className="font-semibold text-xl text-[#5705BC]">Contact Us</h3>
-          <div className="space-y-4">
-            <div className="flex items-center space-x-3">
-              <Mail className="w-6 h-6 text-[#5705BC]" />
-              <span>support@learnsync.pro</span>
-            </div>
-            <div className="flex items-center space-x-3">
-              <Phone className="w-6 h-6 text-[#5705BC]" />
-              <span>+1 (555) 123-4567</span>
-            </div>
-            <div className="flex items-center space-x-3">
-              <MapPin className="w-6 h-6 text-[#5705BC]" />
-              <span>123 Learning Lane, Tech City, ST 12345</span>
+                <span className="text-gray-300 group-hover:text-white transition">
+                  angadsudan453@gmail.com
+                </span>
+              </Link>
+              <Link
+                href="tel:+15551234567"
+                className="flex items-center space-x-4 group"
+              >
+                <Phone className="w-7 h-7 text-[#fff] group-hover:text-[#5705BC]" />
+
+                <span className="text-gray-300 group-hover:text-white transition">
+                  +1 (555) 123-4567
+                </span>
+              </Link>
+              <div className="flex items-center space-x-4 group">
+                <MapPin className="w-7 h-7 text-[#fff] group-hover:text-[#5705BC]" />
+
+                <span className="text-gray-300 group-hover:text-white transition">
+                  123 Learning Lane, Tech City, ST 12345
+                </span>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Copyright Section */}
-      <div className="border-t border-[#480179] mt-12 pt-6 text-center">
-        <p className="text-gray-400">
-          © {new Date().getFullYear()} LearnSync Pro. All Rights Reserved.
-        </p>
+        {/* Newsletter Section */}
+        <div className="bg-[#2C0950] rounded-2xl p-8 mb-6">
+          <div className="grid md:grid-cols-2 gap-6 items-center">
+            <div>
+              <h3 className="text-2xl font-bold mb-2">Stay Updated</h3>
+              <p className="text-gray-300">
+                Subscribe to our newsletter for the latest updates and features
+              </p>
+            </div>
+            <div className="flex">
+              <input
+                type="email"
+                placeholder="Enter your email"
+                className="flex-grow bg-[#1A0330] border border-[#480179] rounded-l-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#5705BC]"
+              />
+              <button className="bg-[#5705BC] hover:bg-[#6B20D6] px-6 py-3 rounded-r-lg font-medium transition duration-300">
+                Subscribe
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Divider */}
+        <div className="border-t border-[#480179] mb-4"></div>
+
+        {/* Copyright Section */}
+        <div className="flex flex-col md:flex-row justify-between items-center text-center md:text-left">
+          <p className="text-gray-400 mb-2 md:mb-0">
+            &copy; {new Date().getFullYear()} Daksh. All Rights Reserved.
+          </p>
+          <div className="flex space-x-3">
+            <Link
+              href="/"
+              className="text-gray-400 hover:text-white transition"
+            >
+              Privacy Policy
+            </Link>
+            <Link
+              href="/"
+              className="text-gray-400 hover:text-white transition"
+            >
+              Terms of Service
+            </Link>
+            <Link
+              href="/"
+              className="text-gray-400 hover:text-white transition"
+            >
+              Cookie Policy
+            </Link>
+          </div>
+        </div>
       </div>
     </footer>
   );

@@ -3,20 +3,20 @@ import { Trash2, Pin, X, Calendar } from "lucide-react";
 import axios from "axios";
 
 // Mock data for demonstration
-const todoExample = {
-  id: "123e4567-e89b-12d3-a456-426614174000",
-  title: "Complete project proposal",
-  description: "Draft the initial proposal for the client meeting next week",
-  deadline: new Date("2025-04-15T00:00:00"),
-  pinned: "UNPINNED",
-  status: "PENDING",
-  visibility: "VISIBLE",
-  priority: "MEDIUM",
-  createdAt: new Date("2025-03-25T10:00:00"),
-  updatedAt: new Date("2025-03-26T11:30:00"),
-};
+// const todoExample = {
+//   id: "123e4567-e89b-12d3-a456-426614174000",
+//   title: "Complete project proposal",
+//   description: "Draft the initial proposal for the client meeting next week",
+//   deadline: new Date("2025-04-15T00:00:00"),
+//   pinned: "UNPINNED",
+//   status: "PENDING",
+//   visibility: "VISIBLE",
+//   priority: "MEDIUM",
+//   createdAt: new Date("2025-03-25T10:00:00"),
+//   updatedAt: new Date("2025-03-26T11:30:00"),
+// };
 
-const TodoCard = ({ todo = todoExample, onUpdate, onDelete }) => {
+const TodoCard = ({ todo, onUpdate, onDelete }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [editedTodo, setEditedTodo] = useState(todo);
 
@@ -99,94 +99,95 @@ const TodoCard = ({ todo = todoExample, onUpdate, onDelete }) => {
   return (
     <div className="relative">
       {/* Main Todo Card */}
-
-      <div
-        className={`p-4 mb-2 rounded-lg shadow border ${
-          todo.status === "COMPLETED"
-            ? "bg-green-50 border-green-200"
-            : "bg-white border-gray-200"
-        } ${todo.pinned === "PINNED" ? "border-l-4 border-l-blue-500" : ""}`}
-      >
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-3 flex-1">
-            {/* Checkbox */}
-            <div
-              onClick={toggleStatus}
-              className={`w-6 h-6 rounded-full border cursor-pointer flex items-center justify-center ${
-                todo.status === "COMPLETED"
-                  ? "bg-green-500 border-green-600"
-                  : "border-gray-400"
-              }`}
-            >
-              {todo.status === "COMPLETED" && (
-                <svg
-                  className="w-4 h-4 text-white"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-              )}
-            </div>
-
-            {/* Title */}
-            <div
-              className="flex-1 cursor-pointer"
-              onClick={() => setIsOpen(true)}
-            >
-              <h3
-                className={`font-medium ${
+      {todo && (
+        <div
+          className={`p-4 mb-2 rounded-lg shadow border ${
+            todo?.status === "COMPLETED"
+              ? "bg-green-50 border-green-200"
+              : "bg-white border-gray-200"
+          } ${todo?.pinned === "PINNED" ? "border-l-4 border-l-blue-500" : ""}`}
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3 flex-1">
+              {/* Checkbox */}
+              <div
+                onClick={toggleStatus}
+                className={`w-6 h-6 rounded-full border cursor-pointer flex items-center justify-center ${
                   todo.status === "COMPLETED"
-                    ? "line-through text-gray-500"
-                    : "text-gray-800"
+                    ? "bg-green-500 border-green-600"
+                    : "border-gray-400"
                 }`}
               >
-                {todo.title}
-              </h3>
-              <div className="flex items-center text-xs text-gray-500 mt-1">
-                <Calendar className="w-3 h-3 mr-1" />
-                <span>Due: {formatDate(todo.deadline)}</span>
-                {todo.priority === "HIGH" && (
-                  <span className="ml-2 px-1.5 py-0.5 bg-red-100 text-red-800 rounded-full text-xs">
-                    High
-                  </span>
-                )}
-                {todo.priority === "MEDIUM" && (
-                  <span className="ml-2 px-1.5 py-0.5 bg-yellow-100 text-yellow-800 rounded-full text-xs">
-                    Medium
-                  </span>
+                {todo.status === "COMPLETED" && (
+                  <svg
+                    className="w-4 h-4 text-white"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
                 )}
               </div>
+
+              {/* Title */}
+              <div
+                className="flex-1 cursor-pointer"
+                onClick={() => setIsOpen(true)}
+              >
+                <h3
+                  className={`font-medium ${
+                    todo.status === "COMPLETED"
+                      ? "line-through text-gray-500"
+                      : "text-gray-800"
+                  }`}
+                >
+                  {todo.title}
+                </h3>
+                <div className="flex items-center text-xs text-gray-500 mt-1">
+                  <Calendar className="w-3 h-3 mr-1" />
+                  <span>Due: {formatDate(todo.deadline)}</span>
+                  {todo.priority === "HIGH" && (
+                    <span className="ml-2 px-1.5 py-0.5 bg-red-100 text-red-800 rounded-full text-xs">
+                      High
+                    </span>
+                  )}
+                  {todo.priority === "MEDIUM" && (
+                    <span className="ml-2 px-1.5 py-0.5 bg-yellow-100 text-yellow-800 rounded-full text-xs">
+                      Medium
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={togglePin}
+                className={`p-1 rounded-full ${
+                  todo.pinned === "PINNED"
+                    ? "text-blue-500"
+                    : "text-gray-400 hover:text-gray-600"
+                }`}
+              >
+                <Pin className="w-4 h-4" />
+              </button>
+              <button
+                onClick={handleDelete}
+                className="p-1 rounded-full text-gray-400 hover:text-red-500"
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
             </div>
           </div>
-
-          {/* Actions */}
-          <div className="flex items-center space-x-2">
-            <button
-              onClick={togglePin}
-              className={`p-1 rounded-full ${
-                todo.pinned === "PINNED"
-                  ? "text-blue-500"
-                  : "text-gray-400 hover:text-gray-600"
-              }`}
-            >
-              <Pin className="w-4 h-4" />
-            </button>
-            <button
-              onClick={handleDelete}
-              className="p-1 rounded-full text-gray-400 hover:text-red-500"
-            >
-              <Trash2 className="w-4 h-4" />
-            </button>
-          </div>
         </div>
-      </div>
+      )}
 
       {/* Overlay for editing */}
       {isOpen && (

@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Check, Search, UserPlus } from "lucide-react";
 import axios from "axios";
+import { toast, Toaster } from "react-hot-toast";
 
 function Participants({ onSetAdd, communityId }) {
   const [email, setEmail] = useState("");
@@ -30,11 +31,20 @@ function Participants({ onSetAdd, communityId }) {
           },
         }
       );
-
       console.log(response.data.data);
+      if (!response.data.data) {
+        throw Error(response.data.message);
+      }
+
+      if (response.data.error) {
+        toast.error(response.data.message);
+      } else {
+        toast.success(response.data.message);
+      }
       setUsers([response.data.data]);
     } catch (err) {
       console.error("Search error:", err);
+      toast.error(err.message || "user not found");
       setError("Failed to search for users");
     } finally {
       setIsSearching(false);
@@ -56,12 +66,18 @@ function Participants({ onSetAdd, communityId }) {
         },
       }
     );
+    if (response.data.error) {
+      toast.error(response.data.message);
+    } else {
+      toast.success(response.data.message);
+    }
     console.log(response.data.data);
     setUsers(users.filter((u) => u.id !== user.id));
   };
 
   return (
     <AnimatePresence>
+      <Toaster />
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}

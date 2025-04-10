@@ -21,7 +21,7 @@ import TodoRoute from "@/components/general/TodoRoute";
 // import { Skeleton } from "@/components/ui/skeleton";
 import NotesForm from "@/components/general/NotesForm";
 import Participants from "@/components/general/Participants";
-
+import { toast, Toaster } from "react-hot-toast";
 function CommunitySubjectsPage() {
   const router = useParams();
   const [communityName, setCommunityName] = useState("");
@@ -121,6 +121,11 @@ function CommunitySubjectsPage() {
           },
         }
       );
+      if (response.data.error) {
+        toast.error(response.data.message);
+      } else {
+        toast.success(response.data.message);
+      }
 
       // Update the subjects list with the new chapter
       setSubjects((prevSubjects) =>
@@ -131,6 +136,11 @@ function CommunitySubjectsPage() {
         )
       );
 
+      if (response.data.error) {
+        toast.error(response.data.message);
+      } else {
+        toast.success(response.data.message);
+      }
       setChapterform({ name: "" });
       setNewChapter(false);
     } catch (error) {
@@ -234,6 +244,12 @@ function CommunitySubjectsPage() {
         }
       );
 
+      if (response.data.error) {
+        toast.error(response.data.message);
+      } else {
+        toast.success(response.data.message);
+      }
+
       setSubjects((prev) => [...prev, response.data.data]);
       setSubjectForm({ name: "" });
       setNewSubject(false);
@@ -244,6 +260,7 @@ function CommunitySubjectsPage() {
 
   return (
     <div className="flex h-screen bg-gray-50 relative overflow-hidden">
+      <Toaster />
       {/* Modals */}
       <AnimatePresence>
         {newChapter && (
