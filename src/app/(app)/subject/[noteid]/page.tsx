@@ -12,6 +12,7 @@ import {
   Minimize,
   Eye,
   NotebookText,
+  Computer,
 } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -28,7 +29,7 @@ function DocumentViewer() {
   const [fullScreen, setFullScreen] = useState(false);
   const [view, setView] = useState("split"); // "split", "fullWidth", or "summary"
   const [text, setText] = useState("");
-
+  const [quizId, setQuizId] = useState("");
   useEffect(() => {
     if (!localStorage.getItem("user")) {
       window.location.href = "/login";
@@ -55,6 +56,7 @@ function DocumentViewer() {
           setDocumentUrl(url);
           setNoteDetails(response.data.data);
           setText(response.data.data.summary.summary);
+          setQuizId(response.data.data.summary.id);
           // Determine file type from URL
           if (url.toLowerCase().endsWith(".pdf")) {
             setFileType("pdf");
@@ -224,6 +226,17 @@ function DocumentViewer() {
                 {view === "fullWidth" ? "Show Chat" : "Full Width"}
               </motion.button>
 
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => {
+                  window.location.href = `${router.noteid}/quiz/${quizId}`;
+                }}
+                className={`flex items-center ${"bg-gray-100 text-gray-700"} px-3 py-2 rounded hover:bg-gray-200 transition-colors`}
+              >
+                <Computer className="mr-2 h-4 w-4" />
+                Take Quiz
+              </motion.button>
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
