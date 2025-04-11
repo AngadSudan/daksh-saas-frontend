@@ -129,7 +129,7 @@ function HomeHero() {
         })}
       </motion.div>
       <motion.div
-        className=" md:hidden relative w-[95%] p-4  mt-12 mx-auto grid grid-cols-2 gap-6"
+        className=" md:hidden relative w-fit p-4  mt-12 mx-auto grid grid-cols-1 gap-6"
         variants={containerVariants}
         initial="hidden"
         animate="visible"

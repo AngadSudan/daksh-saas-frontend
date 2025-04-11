@@ -1,7 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { Rocket, Target, Play } from "lucide-react";
-
+import { Rocket, Target, Play, X } from "lucide-react";
 const AboutHero = () => {
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
 
@@ -71,10 +70,18 @@ const AboutHero = () => {
                   onClick={() => setIsVideoModalOpen(false)}
                   className="absolute top-4 right-4 text-gray-800 hover:text-[#5705BC] transition"
                 >
-                  Close
+                  <X className="w-6 h-6" />
                 </button>
                 <div className="aspect-video bg-gray-100 flex items-center justify-center border border-gray-200">
-                  <p className="text-gray-600">Video Placeholder</p>
+                  <video
+                    src="https://res.cloudinary.com/djy3ewpb8/video/upload/v1744395865/demo_yy5ysg.mp4"
+                    className="w-[90%] h-[90%] m-auto"
+                    controls
+                    onLoadedMetadata={(e) => {
+                      const videoElement = e.currentTarget;
+                      videoElement.playbackRate = 1.5;
+                    }}
+                  />
                 </div>
               </div>
             </div>

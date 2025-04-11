@@ -3,11 +3,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams } from "next/navigation";
 import { ArrowLeft, ArrowRight, CheckCircle, PieChart } from "lucide-react";
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
-import { Pie } from "react-chartjs-2";
 import QuestionCardOption from "@/components/general/EnhancedCard";
-// Register Chart.js components
-ChartJS.register(ArcElement, Tooltip, Legend);
 
 function Page() {
   const params = useParams();
@@ -141,25 +137,25 @@ function Page() {
     });
 
     // Calculate MCQ results
-    multiCorrect.forEach((q, index) => {
-      if (userGeneratedMCQResult[index].length === 0) {
-        unattempted++;
-      } else {
-        // Check if arrays have the same elements
-        const userAnswers = [...userGeneratedMCQResult[index]].sort();
-        const correctAnswers = [...q.answers].sort();
+    // multiCorrect.forEach((q, index) => {
+    //   if (userGeneratedMCQResult[index].length === 0) {
+    //     unattempted++;
+    //   } else {
+    //     // Check if arrays have the same elements
+    //     const userAnswers = [...userGeneratedMCQResult[index]].sort();
+    //     const correctAnswers = [...q.answers].sort();
 
-        const isCorrect =
-          userAnswers.length === correctAnswers.length &&
-          userAnswers.every((val, i) => val === correctAnswers[i]);
+    //     const isCorrect =
+    //       userAnswers.length === correctAnswers.length &&
+    //       userAnswers.every((val, i) => val === correctAnswers[i]);
 
-        if (isCorrect) {
-          correct++;
-        } else {
-          incorrect++;
-        }
-      }
-    });
+    //     if (isCorrect) {
+    //       correct++;
+    //     } else {
+    //       incorrect++;
+    //     }
+    //   }
+    // });
 
     return { correct, incorrect, unattempted };
   };
@@ -169,26 +165,6 @@ function Page() {
     setQuizStats(results);
     setIsSubmitted(true);
     setShowResults(true);
-  };
-
-  const chartData = {
-    labels: ["Correct", "Incorrect", "Unattempted"],
-    datasets: [
-      {
-        data: [quizStats.correct, quizStats.incorrect, quizStats.unattempted],
-        backgroundColor: [
-          "rgba(75, 192, 192, 0.7)",
-          "rgba(255, 99, 132, 0.7)",
-          "rgba(201, 203, 207, 0.7)",
-        ],
-        borderColor: [
-          "rgb(75, 192, 192)",
-          "rgb(255, 99, 132)",
-          "rgb(201, 203, 207)",
-        ],
-        borderWidth: 1,
-      },
-    ],
   };
 
   const isOptionSelected = (option) => {
@@ -272,6 +248,14 @@ function Page() {
     return `${baseClasses} bg-white border opacity-70`;
   };
 
+  // Calculate total questions
+  const totalQuestions = singleCorrect.length + multiCorrect.length;
+
+  // Calculate percentages for results visualization
+  const calculatePercentage = (value) => {
+    return totalQuestions > 0 ? Math.round((value / totalQuestions) * 100) : 0;
+  };
+
   return (
     <div className="flex gap-4 h-screen w-full bg-gray-50">
       <div className="w-2/3 p-4 flex flex-col">
@@ -280,29 +264,42 @@ function Page() {
             <h2 className="text-2xl font-bold mb-4 text-gray-800">
               Quiz Results
             </h2>
-            <div className="w-64 h-64 mb-4">
-              <Pie data={chartData} options={{ responsive: true }} />
+
+            {/* Simple Results Display (Replacing Chart.js) */}
+            <div className="w-full max-w-md mb-6">
+              <div className="w-full bg-gray-200 rounded-full h-8 mb-4">
+                <div
+                  className="bg-green-500 h-8 rounded-l-full flex items-center justify-center text-white font-medium"
+                  style={{
+                    width: `${calculatePercentage(quizStats.correct)}%`,
+                  }}
+                >
+                  {calculatePercentage(quizStats.correct)}%
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-4 w-full">
+                <div className="bg-green-100 p-3 rounded-lg text-center">
+                  <p className="text-green-800 font-bold text-xl">
+                    {quizStats.correct}
+                  </p>
+                  <p className="text-green-600">Correct</p>
+                </div>
+                <div className="bg-red-100 p-3 rounded-lg text-center">
+                  <p className="text-red-800 font-bold text-xl">
+                    {quizStats.incorrect}
+                  </p>
+                  <p className="text-red-600">Incorrect</p>
+                </div>
+                <div className="bg-gray-100 p-3 rounded-lg text-center">
+                  <p className="text-gray-800 font-bold text-xl">
+                    {quizStats.unattempted}
+                  </p>
+                  <p className="text-gray-600">Unattempted</p>
+                </div>
+              </div>
             </div>
-            <div className="grid grid-cols-3 gap-4 w-full max-w-lg">
-              <div className="bg-green-100 p-3 rounded-lg text-center">
-                <p className="text-green-800 font-bold text-xl">
-                  {quizStats.correct}
-                </p>
-                <p className="text-green-600">Correct</p>
-              </div>
-              <div className="bg-red-100 p-3 rounded-lg text-center">
-                <p className="text-red-800 font-bold text-xl">
-                  {quizStats.incorrect}
-                </p>
-                <p className="text-red-600">Incorrect</p>
-              </div>
-              <div className="bg-gray-100 p-3 rounded-lg text-center">
-                <p className="text-gray-800 font-bold text-xl">
-                  {quizStats.unattempted}
-                </p>
-                <p className="text-gray-600">Unattempted</p>
-              </div>
-            </div>
+
             <button
               onClick={() => setShowResults(false)}
               className="mt-4 bg-blue-600 text-white py-2 px-6 rounded-lg hover:bg-blue-700 transition-colors"
@@ -427,7 +424,7 @@ function Page() {
           >
             Single Choice
           </button>
-          <button
+          {/* <button
             onClick={() => {
               setQuizMode("MCQ");
               setCurrentQuestionIndex(0);
@@ -439,7 +436,7 @@ function Page() {
             }`}
           >
             Multiple Choice
-          </button>
+          </button> */}
         </div>
 
         <div className="flex-1 overflow-auto">

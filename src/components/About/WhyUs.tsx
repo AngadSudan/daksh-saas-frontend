@@ -2,6 +2,7 @@ import React from "react";
 import { Check } from "lucide-react";
 import Image from "next/image";
 import whyus from "../../../public/whyUs.svg";
+//create similar to the JobJaro what sets us apart
 const WhyUs = () => {
   const reasons = [
     "AI-Driven Productivity",

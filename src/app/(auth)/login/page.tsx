@@ -46,6 +46,21 @@ function LoginPage() {
       return;
     }
 
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      toast.error("Please enter a valid email address");
+      return;
+    }
+
+    // Exclude fake emails
+    const fakeEmailDomains = ["example.com", "test.com", "fake.com"];
+    const emailDomain = formData.email.split("@")[1];
+    if (fakeEmailDomains.includes(emailDomain)) {
+      toast.error("Please use a valid email address");
+      return;
+    }
+
     setLoading(true);
     try {
       const response = await axios.post(
@@ -54,13 +69,20 @@ function LoginPage() {
         { withCredentials: true }
       );
 
+      console.log("response is ", response.data);
       if (!response.data.data) {
         throw new Error(response.data.message || "Login failed");
+      }
+      if (response.data.error) {
+        toast.error(response.data.message);
+      } else {
+        toast.success("Login successful!");
       }
 
       // Store user data in localStorage and cookies
       localStorage.setItem("user", response.data.data.accessToken);
       localStorage.setItem("loggedin", "true");
+      localStorage.setItem("token", response.data.data.user.id);
 
       Cookies.set("user", JSON.stringify(response.data.data.user), {
         path: "/",
@@ -74,14 +96,12 @@ function LoginPage() {
         sameSite: "Strict",
       });
 
-      toast.success("Login successful!");
-
       // Short delay for toast to be visible before redirect
       setTimeout(() => {
         router.push("/home");
       }, 1000);
     } catch (error) {
-      console.error(error);
+      console.error("error is ", error.message);
       toast.error(error.message || "Login failed. Please try again.");
     } finally {
       setLoading(false);

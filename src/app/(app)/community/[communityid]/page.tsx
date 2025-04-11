@@ -38,12 +38,12 @@ function CommunitySubjectsPage() {
   const [subjectform, setSubjectForm] = useState({
     name: "",
   });
+  const [admin, setIsAdmin] = useState(false);
   const [addParticipant, setAddParticipant] = useState(false);
   const [chapterform, setChapterform] = useState({
     name: "",
   });
   const [notesUpload, setNotesUpload] = useState(false);
-
   useEffect(() => {
     if (localStorage.getItem("user") === null) {
       window.location.href = "/login";
@@ -63,6 +63,12 @@ function CommunitySubjectsPage() {
             },
           }
         );
+        console.log(
+          response.data.data.createdBy === localStorage.getItem("token")
+        );
+        setIsAdmin(
+          response.data.data.createdBy === localStorage.getItem("token")
+        );
         setSubjects(response.data.data.subjects);
         setCommunityName(response.data.data.name);
         setIsLoading(false);
@@ -73,6 +79,7 @@ function CommunitySubjectsPage() {
       }
     };
     fetchData();
+    console.log(admin);
   }, [router.communityid]);
 
   useEffect(() => {
@@ -490,12 +497,14 @@ function CommunitySubjectsPage() {
                     <Book className="h-6 w-6 text-gray-400" />
                   </div>
                   <p className="text-gray-500">No subjects available</p>
-                  <button
-                    onClick={() => setNewSubject(true)}
-                    className="mt-3 text-sm text-[#480179] hover:underline"
-                  >
-                    Create your first subject
-                  </button>
+                  {admin && (
+                    <button
+                      onClick={() => setNewSubject(true)}
+                      className="mt-3 text-sm text-[#480179] hover:underline"
+                    >
+                      Create your first subject
+                    </button>
+                  )}
                 </div>
               ) : (
                 subjects.map((subject) => (
@@ -515,17 +524,19 @@ function CommunitySubjectsPage() {
                         </span>
                       </div>
                       <div className="flex gap-2">
-                        <button
-                          className="p-1 hover:bg-gray-200 rounded-full transition-colors"
-                          title="Add chapter"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setSelectedSubject(subject);
-                            setNewChapter(true);
-                          }}
-                        >
-                          <PlusCircle className="w-4 h-4 text-gray-500" />
-                        </button>
+                        {admin && (
+                          <button
+                            className="p-1 hover:bg-gray-200 rounded-full transition-colors"
+                            title="Add chapter"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedSubject(subject);
+                              setNewChapter(true);
+                            }}
+                          >
+                            <PlusCircle className="w-4 h-4 text-gray-500" />
+                          </button>
+                        )}
                         {expandedSubjects[subject.id] ? (
                           <ChevronUp className="w-4 h-4 text-gray-500" />
                         ) : (
@@ -577,13 +588,15 @@ function CommunitySubjectsPage() {
             </div>
 
             <div className="p-4 border-t mt-auto">
-              <button
-                onClick={() => setNewSubject(true)}
-                className="flex items-center justify-center w-full bg-[#480179] text-white py-2.5 px-4 rounded-lg hover:bg-[#5C0C99] transition-colors"
-              >
-                <PlusCircle className="w-4 h-4 mr-2" />
-                <span className="font-medium">Create New Subject</span>
-              </button>
+              {admin && (
+                <button
+                  onClick={() => setNewSubject(true)}
+                  className="flex items-center justify-center w-full bg-[#480179] text-white py-2.5 px-4 rounded-lg hover:bg-[#5C0C99] transition-colors"
+                >
+                  <PlusCircle className="w-4 h-4 mr-2" />
+                  <span className="font-medium">Create New Subject</span>
+                </button>
+              )}
             </div>
           </motion.div>
         )}
@@ -623,25 +636,26 @@ function CommunitySubjectsPage() {
               <div>
                 <div className="flex items-center gap-2 text-sm text-gray-500 mb-1">
                   <span className="hidden md:block">
-                    {selectedSubject.name !== null && selectedSubject.name}
+                    {selectedSubject?.name !== null && selectedSubject.name}
                   </span>
                   <ChevronDown className="w-3 h-3 hidden md:block" />
                   <span className="hidden md:block">
-                    {selectedChapter.name !== null && selectedChapter.name}
+                    {selectedChapter?.name !== null && selectedChapter.name}
                   </span>
                 </div>
                 <h1 className="text-2xl md:text-3xl font-bold text-center md:text-left text-gray-800">
-                  {selectedChapter.name !== null && selectedChapter.name}
+                  {selectedChapter?.name !== null && selectedChapter.name}
                 </h1>
               </div>
-
-              <button
-                onClick={() => setNotesUpload(true)}
-                className="flex items-center justify-center gap-2 bg-[#480179] text-white py-2.5 px-5 rounded-lg hover:bg-[#5C0C99] transition-colors shadow-sm"
-              >
-                <Upload className="w-4 h-4" />
-                <span className="font-medium">Upload Notes</span>
-              </button>
+              {admin && (
+                <button
+                  onClick={() => setNotesUpload(true)}
+                  className="flex items-center justify-center gap-2 bg-[#480179] text-white py-2.5 px-5 rounded-lg hover:bg-[#5C0C99] transition-colors shadow-sm"
+                >
+                  <Upload className="w-4 h-4" />
+                  <span className="font-medium">Upload Notes</span>
+                </button>
+              )}
             </div>
 
             {Notes.length === 0 ? (
@@ -656,13 +670,15 @@ function CommunitySubjectsPage() {
                   There are no notes for this chapter yet. Be the first to
                   contribute study materials!
                 </p>
-                <button
-                  onClick={() => setNotesUpload(true)}
-                  className="inline-flex items-center justify-center gap-2 bg-[#480179] text-white py-2.5 px-6 rounded-lg hover:bg-[#5C0C99] transition-colors"
-                >
-                  <Upload className="w-4 h-4" />
-                  <span className="font-medium">Upload Notes</span>
-                </button>
+                {admin && (
+                  <button
+                    onClick={() => setNotesUpload(true)}
+                    className="inline-flex items-center justify-center gap-2 bg-[#480179] text-white py-2.5 px-6 rounded-lg hover:bg-[#5C0C99] transition-colors"
+                  >
+                    <Upload className="w-4 h-4" />
+                    <span className="font-medium">Upload Notes</span>
+                  </button>
+                )}
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
