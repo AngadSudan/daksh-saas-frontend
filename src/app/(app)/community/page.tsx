@@ -63,7 +63,7 @@ function CommunitiesPage() {
           toast.success(response.data.message);
         }
         console.log(response.data.data);
-
+        window.location.reload();
         setNewCommunity({ name: "", description: "", websiteUrl: "" });
         setOpenDialogBox(false);
       } catch (error) {

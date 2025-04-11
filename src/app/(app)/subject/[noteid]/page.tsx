@@ -11,10 +11,12 @@ import {
   Maximize,
   Minimize,
   Eye,
+  NotebookText,
 } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import Chatbot from "@/components/general/Chatbot";
+import PreviewText from "@/components/general/PreviewText";
 
 function DocumentViewer() {
   const router = useParams();
@@ -24,7 +26,8 @@ function DocumentViewer() {
   const [error, setError] = useState(null);
   const [fileType, setFileType] = useState("");
   const [fullScreen, setFullScreen] = useState(false);
-  const [expandedView, setExpandedView] = useState(false);
+  const [view, setView] = useState("split"); // "split", "fullWidth", or "summary"
+  const [text, setText] = useState("");
 
   useEffect(() => {
     if (!localStorage.getItem("user")) {
@@ -46,12 +49,12 @@ function DocumentViewer() {
             },
           }
         );
-
+        console.log(response.data.data);
         if (response.data && response.data.data) {
           const url = response.data.data.documentLink;
           setDocumentUrl(url);
           setNoteDetails(response.data.data);
-
+          setText(response.data.data.summary.summary);
           // Determine file type from URL
           if (url.toLowerCase().endsWith(".pdf")) {
             setFileType("pdf");
@@ -90,9 +93,13 @@ function DocumentViewer() {
     setFullScreen(!fullScreen);
   };
 
-  // Toggle expanded view (hide/show chatbot)
-  const toggleExpandedView = () => {
-    setExpandedView(!expandedView);
+  // Toggle between different view modes
+  const toggleFullWidth = () => {
+    setView(view === "fullWidth" ? "split" : "fullWidth");
+  };
+
+  const toggleSummary = () => {
+    setView(view === "summary" ? "split" : "summary");
   };
 
   if (loading) {
@@ -206,11 +213,29 @@ function DocumentViewer() {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={toggleExpandedView}
-                className="flex items-center bg-gray-100 text-gray-700 px-3 py-2 rounded hover:bg-gray-200 transition-colors"
+                onClick={toggleFullWidth}
+                className={`flex items-center ${
+                  view === "fullWidth"
+                    ? "bg-blue-100 text-blue-700"
+                    : "bg-gray-100 text-gray-700"
+                } px-3 py-2 rounded hover:bg-gray-200 transition-colors`}
               >
                 <Eye className="mr-2 h-4 w-4" />
-                {expandedView ? "Show Chat" : "Full Width"}
+                {view === "fullWidth" ? "Show Chat" : "Full Width"}
+              </motion.button>
+
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={toggleSummary}
+                className={`flex items-center ${
+                  view === "summary"
+                    ? "bg-blue-100 text-blue-700"
+                    : "bg-gray-100 text-gray-700"
+                } px-3 py-2 rounded hover:bg-gray-200 transition-colors`}
+              >
+                <NotebookText className="mr-2 h-4 w-4" />
+                {view === "summary" ? "Hide Summary" : "Show Summary"}
               </motion.button>
 
               <motion.a
@@ -242,7 +267,7 @@ function DocumentViewer() {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.2 }}
           className={`${
-            expandedView || fullScreen ? "w-full" : "w-full md:w-3/5"
+            view === "fullWidth" || fullScreen ? "w-full" : "w-full md:w-3/5"
           } bg-white rounded-lg shadow-lg overflow-hidden relative`}
         >
           {/* Fullscreen toggle button */}
@@ -274,10 +299,10 @@ function DocumentViewer() {
           )}
         </motion.div>
 
-        {/* Chatbot - Hide when expanded view or fullscreen */}
-        {!expandedView && !fullScreen && (
+        {/* Right side panel - only show when not in fullWidth mode or fullScreen */}
+        {view !== "fullWidth" && !fullScreen && (
           <div className="w-full md:w-2/5 bg-white rounded-lg shadow-lg overflow-hidden h-[75vh] mt-4 md:mt-0">
-            <Chatbot />
+            {view === "summary" ? <PreviewText text={text} /> : <Chatbot />}
           </div>
         )}
       </div>

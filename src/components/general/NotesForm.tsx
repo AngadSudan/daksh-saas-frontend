@@ -42,6 +42,7 @@ function NotesForm({ onOpen, setOnOpen, chapterId }) {
       }
       console.log("File uploaded successfully:", response.data.data);
       setOnOpen(false);
+      window.location.reload();
     } catch (error) {
       console.error("Error uploading file:", error);
     }

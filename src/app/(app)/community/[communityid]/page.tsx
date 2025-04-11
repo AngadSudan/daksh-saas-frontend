@@ -126,6 +126,7 @@ function CommunitySubjectsPage() {
       } else {
         toast.success(response.data.message);
       }
+      window.location.reload();
 
       // Update the subjects list with the new chapter
       setSubjects((prevSubjects) =>
@@ -149,7 +150,12 @@ function CommunitySubjectsPage() {
   };
 
   const handleChapterChange = (e) => {
-    setChapterform((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    try {
+      setChapterform((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    } catch (error) {
+      console.log("Error setting chapter form:", error);
+      window.location.reload();
+    }
   };
 
   useEffect(() => {
@@ -617,15 +623,15 @@ function CommunitySubjectsPage() {
               <div>
                 <div className="flex items-center gap-2 text-sm text-gray-500 mb-1">
                   <span className="hidden md:block">
-                    {selectedSubject.name}
+                    {selectedSubject.name !== null && selectedSubject.name}
                   </span>
                   <ChevronDown className="w-3 h-3 hidden md:block" />
                   <span className="hidden md:block">
-                    {selectedChapter.name}
+                    {selectedChapter.name !== null && selectedChapter.name}
                   </span>
                 </div>
                 <h1 className="text-2xl md:text-3xl font-bold text-center md:text-left text-gray-800">
-                  {selectedChapter.name}
+                  {selectedChapter.name !== null && selectedChapter.name}
                 </h1>
               </div>
 
