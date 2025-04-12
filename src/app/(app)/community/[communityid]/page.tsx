@@ -167,7 +167,6 @@ function CommunitySubjectsPage() {
   useEffect(() => {
     const fetchNotes = async () => {
       if (!selectedChapter) return;
-      setIsCreatingNew(true);
       try {
         const response = await axios.get(
           `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/community/chapter/${selectedChapter.id}/notes`,
@@ -179,7 +178,6 @@ function CommunitySubjectsPage() {
           }
         );
         setNotes(response.data.data[0]?.notes || []);
-        setIsCreatingNew(false);
       } catch (error) {
         console.error("Failed to fetch notes:", error);
         setNotes([]);

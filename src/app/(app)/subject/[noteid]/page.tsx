@@ -223,7 +223,7 @@ function DocumentViewer() {
               </div> */}
             </div>
 
-            <div className="flex gap-2 mt-4 md:mt-0">
+            <div className="grid grid-cols-2 md:flex  gap-2 mt-4 md:mt-0">
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -317,11 +317,15 @@ function DocumentViewer() {
             <iframe
               src={getViewerUrl()}
               className={`w-full border-none ${
-                fullScreen ? "h-full" : "h-[75vh]"
-              }`}
+                fullScreen ? "h-[100svh]" : "h-[75vh]"
+              } max-w-full overflow-auto`}
               title={noteDetails?.title || "Document Viewer"}
               loading="lazy"
               allowFullScreen
+              style={{
+                WebkitOverflowScrolling: "touch",
+                maxWidth: "100vw",
+              }}
             />
           )}
         </motion.div>

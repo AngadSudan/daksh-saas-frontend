@@ -2,20 +2,6 @@ import React, { useState } from "react";
 import { Trash2, Pin, X, Calendar } from "lucide-react";
 import axios from "axios";
 
-// Mock data for demonstration
-// const todoExample = {
-//   id: "123e4567-e89b-12d3-a456-426614174000",
-//   title: "Complete project proposal",
-//   description: "Draft the initial proposal for the client meeting next week",
-//   deadline: new Date("2025-04-15T00:00:00"),
-//   pinned: "UNPINNED",
-//   status: "PENDING",
-//   visibility: "VISIBLE",
-//   priority: "MEDIUM",
-//   createdAt: new Date("2025-03-25T10:00:00"),
-//   updatedAt: new Date("2025-03-26T11:30:00"),
-// };
-
 const TodoCard = ({ todo, onUpdate, onDelete }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [editedTodo, setEditedTodo] = useState(todo);

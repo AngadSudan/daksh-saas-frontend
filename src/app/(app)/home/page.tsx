@@ -9,12 +9,16 @@ import {
   Users,
   CheckCircle,
   Clock,
-  Target,
+  Loader2,
+  BarChart3,
+  Calendar,
+  AlertCircle,
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import logo from "../../../../public/logo.png";
 import { toast, Toaster } from "react-hot-toast";
+
 const exampleInsights = {
   AllTodos: 0,
   CompletedTodos: 0,
@@ -28,7 +32,6 @@ function DashboardPage() {
   const [communities, setCommunities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
   const [insights, setInsights] = useState(exampleInsights);
 
   useEffect(() => {
@@ -36,6 +39,7 @@ function DashboardPage() {
       window.location.href = "/login";
     }
   }, []);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -104,6 +108,7 @@ function DashboardPage() {
 
     fetchData();
   }, []);
+
   const handleUpdate = async (updatedTodo) => {
     try {
       await axios.put(
@@ -144,192 +149,325 @@ function DashboardPage() {
       console.error("Failed to delete todo:", error);
     }
   };
-  return (
-    <div className="container mx-auto px-4 py-8">
-      <Toaster />
-      <h1 className="text-3xl flex gap-2 font-bold mb-8">
-        <Image src={logo} alt="logo" className="w-20 h-20 object-contain" />
-        <span className="my-auto">Dashboard</span>
-      </h1>
 
-      {loading ? (
-        <div className="flex justify-center items-center h-64">
-          <div className="animate-pulse text-gray-500">
-            Loading dashboard data...
+  // Calculate completion percentage for progress bar
+  const completionPercentage =
+    insights.AllTodos > 0
+      ? Math.round((insights.CompletedTodos / insights.AllTodos) * 100)
+      : 0;
+
+  return (
+    <div className="min-h-screen bg-slate-50">
+      <Toaster position="top-right" />
+      <div className="container mx-auto px-4 py-8">
+        {/* Header with subtle background and shadow */}
+        <div className="mb-8 bg-white rounded-xl shadow-sm p-6">
+          <div className="flex items-center gap-4">
+            <Image
+              src={logo}
+              alt="logo"
+              className="w-[100px] h-[100px] object-contain"
+            />
+
+            <h1 className="text-3xl font-bold text-slate-800">Dashboard</h1>
           </div>
         </div>
-      ) : error ? (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-800">
-          {error}
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Pinned Todos Section */}
-          <div className="lg:col-span-2">
-            <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center">
-                  <Pin className="h-5 w-5 text-blue-500 mr-2" />
-                  <h2 className="text-xl font-semibold">Pinned Todos</h2>
+
+        {loading ? (
+          <div className="flex flex-col justify-center items-center h-96 bg-white rounded-xl shadow-sm p-8">
+            <div className="relative">
+              <Loader2 className="h-12 w-12 text-[#5C0C99] animate-spin" />
+              {/* <div className="absolute inset-0 h-12 w-12 border-4 border-t-[#5C0C99] border-purple-200 rounded-full animate-pulse opacity-70"></div> */}
+            </div>
+            <p className="mt-4 text-slate-600 font-medium">
+              Loading your dashboard...
+            </p>
+            <div className="mt-6 w-64 h-2 bg-slate-200 rounded-full overflow-hidden">
+              <div className="h-full bg-[#5C0C99] rounded-full animate-pulse"></div>
+            </div>
+          </div>
+        ) : error ? (
+          <div className="bg-red-50 border-l-4 border-red-400 rounded-lg p-6 text-red-700 flex items-start">
+            <AlertCircle className="h-6 w-6 mr-3 flex-shrink-0" />
+            <div>
+              <h3 className="font-medium text-red-800">Something went wrong</h3>
+              <p className="mt-1">{error}</p>
+              <button
+                onClick={() => window.location.reload()}
+                className="mt-3 text-sm bg-red-100 hover:bg-red-200 text-red-800 px-3 py-1 rounded-md transition-colors"
+              >
+                Try Again
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            {/* Main Content Column */}
+            <div className="lg:col-span-8">
+              {/* Pinned Todos Section */}
+              <div className="bg-white rounded-xl shadow-sm mb-6 overflow-hidden">
+                <div className="border-b border-slate-100 p-6">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center">
+                      <div className="bg-violet-50 p-2 rounded-lg mr-3">
+                        <Pin className="h-5 w-5 text-violet-600" />
+                      </div>
+                      <h2 className="text-xl font-semibold text-slate-800">
+                        Pinned Todos
+                      </h2>
+                    </div>
+                    <Link
+                      href="/todo"
+                      className="flex items-center text-violet-600 hover:text-violet-800 font-medium text-sm group transition-colors"
+                    >
+                      View All
+                      <ArrowRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                    </Link>
+                  </div>
                 </div>
-                <a
-                  href="/todo"
-                  className="text-blue-500 hover:text-blue-700 flex items-center text-sm"
-                >
-                  View All <ArrowRight className="ml-1 h-4 w-4" />
-                </a>
+
+                <div className="p-6">
+                  {todos.length === 0 ? (
+                    <div className="bg-slate-50 rounded-lg p-8 text-center">
+                      <div className="mx-auto w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mb-4">
+                        <Pin className="h-8 w-8 text-slate-400" />
+                      </div>
+                      <h3 className="text-slate-700 font-medium mb-2">
+                        No pinned todos found
+                      </h3>
+                      <p className="text-slate-500 text-sm mb-4">
+                        Pin important tasks to see them here.
+                      </p>
+                      <Link
+                        href="/todo"
+                        className="inline-flex items-center px-4 py-2 bg-violet-100 text-violet-700 rounded-lg hover:bg-violet-200 transition-colors text-sm font-medium"
+                      >
+                        Create a Todo
+                      </Link>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {todos.map((todo) => (
+                        <TodoCard
+                          key={todo.id}
+                          todo={todo}
+                          onUpdate={handleUpdate}
+                          onDelete={handleDelete}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
-              {todos.length === 0 ? (
-                <div className="bg-gray-50 rounded-lg p-6 text-center text-gray-500">
-                  No pinned todos found. Pin important tasks to see them here.
+
+              {/* Insights Section - Improved */}
+              <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+                <div className="border-b border-slate-100 p-6">
+                  <div className="flex items-center">
+                    <div className="bg-indigo-50 p-2 rounded-lg mr-3">
+                      <BarChart3 className="h-5 w-5 text-indigo-600" />
+                    </div>
+                    <h2 className="text-xl font-semibold text-slate-800">
+                      Your Insights
+                    </h2>
+                  </div>
                 </div>
-              ) : (
-                <div className="space-y-4">
-                  {todos.map((todo) => (
-                    <TodoCard
-                      key={todo.id}
-                      todo={todo}
-                      onUpdate={handleUpdate}
-                      onDelete={handleDelete}
-                    />
-                  ))}
+
+                <div className="p-6">
+                  {/* Insights Cards */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    {/* Todo Stats Card */}
+                    <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6 border border-blue-200/50 shadow-sm">
+                      <div className="flex justify-between items-center mb-4">
+                        <div className="flex items-center">
+                          <div className="bg-violet-500/10 p-2 rounded-lg mr-3">
+                            <CheckCircle className="h-6 w-6 text-violet-600" />
+                          </div>
+                          <h3 className="font-semibold text-violet-900">
+                            Todo Progress
+                          </h3>
+                        </div>
+                        <span className="bg-white px-3 py-1 rounded-full text-violet-800 font-medium text-sm shadow-sm">
+                          {completionPercentage}%
+                        </span>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4 mb-4">
+                        <div className="bg-white/80 p-3 rounded-lg">
+                          <div className="text-xl font-bold text-slate-800">
+                            {insights.AllTodos}
+                          </div>
+                          <div className="text-xs text-slate-500 font-medium">
+                            Total Todos
+                          </div>
+                        </div>
+                        <div className="bg-white/80 p-3 rounded-lg">
+                          <div className="text-xl font-bold text-green-600">
+                            {insights.CompletedTodos}
+                          </div>
+                          <div className="text-xs text-slate-500 font-medium">
+                            Completed
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="mt-2">
+                        <div className="h-2 w-full bg-violet-200 rounded-full overflow-hidden">
+                          <div
+                            className="h-full bg-violet-600 rounded-full transition-all duration-500"
+                            style={{ width: `${completionPercentage}%` }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Communities Card */}
+                    <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-6 border border-purple-200/50 shadow-sm">
+                      <div className="flex items-center mb-4">
+                        <div className="bg-purple-500/10 p-2 rounded-lg mr-3">
+                          <Users className="h-6 w-6 text-[#5C0C99]/80" />
+                        </div>
+                        <h3 className="font-semibold text-purple-900">
+                          Communities
+                        </h3>
+                      </div>
+
+                      <div className="bg-white/80 p-4 rounded-lg mb-4">
+                        <div className="flex justify-between items-center">
+                          <span className="text-slate-600 font-medium">
+                            Active Communities
+                          </span>
+                          <span className="text-2xl font-bold text-purple-800">
+                            {insights.totalCommunities}
+                          </span>
+                        </div>
+                      </div>
+
+                      <Link
+                        href="/community"
+                        className="flex items-center justify-center w-full bg-purple-600 hover:bg-purple-700 text-white py-2 px-4 rounded-lg transition-colors text-sm font-medium"
+                      >
+                        Browse Communities{" "}
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </Link>
+                    </div>
+                  </div>
+
+                  {/* Urgent Deadline Tasks */}
+                  <div className="mt-2">
+                    <div className="flex items-center mb-4">
+                      <div className="bg-red-50 p-2 rounded-lg mr-3">
+                        <Clock className="h-5 w-5 text-red-600" />
+                      </div>
+                      <h3 className="font-semibold text-slate-800">
+                        Urgent Deadline Tasks
+                      </h3>
+                    </div>
+
+                    {insights.deadlineTodo &&
+                    insights.deadlineTodo.length > 0 ? (
+                      <div className="space-y-4">
+                        {insights.deadlineTodo.map((todo) => (
+                          <TodoCard
+                            key={todo.id}
+                            todo={todo}
+                            onUpdate={handleUpdate}
+                            onDelete={handleDelete}
+                          />
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="bg-green-50 border border-green-100 rounded-lg p-6 text-center">
+                        <div className="mx-auto w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-3">
+                          <Calendar className="h-6 w-6 text-green-600" />
+                        </div>
+                        <h3 className="text-green-800 font-medium mb-1">
+                          All Caught Up!
+                        </h3>
+                        <p className="text-green-600 text-sm">
+                          No urgent deadline tasks at the moment.
+                        </p>
+                      </div>
+                    )}
+                  </div>
                 </div>
-              )}
+              </div>
             </div>
 
-            {/* Insights Section - Improved */}
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center">
-                  <Target className="h-5 w-5 text-blue-500 mr-2" />
-                  <h2 className="text-xl font-semibold">Your Insights</h2>
-                </div>
-              </div>
-
-              {/* Insights Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                <div className="bg-blue-50 rounded-lg p-4 border border-blue-100">
-                  <div className="flex items-center mb-2">
-                    <CheckCircle className="h-5 w-5 text-blue-500 mr-2" />
-                    <h3 className="font-medium">Todo Status</h3>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Total Todos:</span>
-                    <span className="font-semibold">{insights.AllTodos}</span>
-                  </div>
-                  <div className="flex justify-between text-sm mt-1">
-                    <span className="text-gray-600">Completed:</span>
-                    <span className="font-semibold">
-                      {insights.CompletedTodos}
-                    </span>
-                  </div>
-                  <div className="mt-2 pt-2 border-t border-blue-100">
-                    <div className="bg-blue-100 rounded-full h-2 w-full">
-                      <div
-                        className="bg-blue-500 h-2 rounded-full"
-                        style={{
-                          width: `${
-                            insights.AllTodos > 0
-                              ? (insights.CompletedTodos / insights.AllTodos) *
-                                100
-                              : 0
-                          }%`,
-                        }}
-                      ></div>
+            {/* Sidebar Column */}
+            <div className="lg:col-span-4">
+              <div className="bg-white rounded-xl shadow-sm sticky top-6">
+                <div className="border-b border-slate-100 p-6">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center">
+                      <div className="bg-purple-50 p-2 rounded-lg mr-3">
+                        <Users className="h-5 w-5 text-[#5C0C99]/80" />
+                      </div>
+                      <h2 className="text-xl font-semibold text-slate-800">
+                        Your Communities
+                      </h2>
                     </div>
                   </div>
                 </div>
 
-                <div className="bg-purple-50 rounded-lg p-4 border border-purple-100">
-                  <div className="flex items-center mb-2">
-                    <Users className="h-5 w-5 text-[#5C0C99]/80 mr-2" />
-                    <h3 className="font-medium">Communities</h3>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-600">Total Communities:</span>
-                    <span className="font-semibold text-lg">
-                      {insights.totalCommunities}
-                    </span>
-                  </div>
-                  <div className="mt-3">
+                <div className="p-6">
+                  {communities.length === 0 ? (
+                    <div className="bg-slate-50 rounded-lg p-6 text-center">
+                      <div className="mx-auto w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mb-4">
+                        <Users className="h-8 w-8 text-slate-400" />
+                      </div>
+                      <h3 className="text-slate-700 font-medium mb-2">
+                        No Communities Yet
+                      </h3>
+                      <p className="text-slate-500 text-sm mb-4">
+                        Join communities to collaborate with others.
+                      </p>
+                      <Link
+                        href="/community"
+                        className="inline-flex items-center px-4 py-2 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition-colors text-sm font-medium"
+                      >
+                        Explore Communities
+                      </Link>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {communities.map((community) => (
+                        <CommunityCard
+                          key={community.id}
+                          community={community}
+                        />
+                      ))}
+
+                      <Link
+                        href="/community"
+                        className="flex justify-between items-center p-4 bg-slate-50 hover:bg-slate-100 rounded-lg transition-colors"
+                      >
+                        <div className="flex items-center">
+                          <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center mr-3">
+                            <ArrowRight className="h-5 w-5 text-purple-600" />
+                          </div>
+                          <span className="font-medium text-slate-700">
+                            View All Communities
+                          </span>
+                        </div>
+                      </Link>
+                    </div>
+                  )}
+
+                  <div className="mt-6 pt-6 border-t border-slate-100">
                     <Link
                       href="/community"
-                      className="text-[#5C0C99] hover:text-[#5C0C99]/80 text-sm flex items-center"
+                      className="block w-full py-3 px-4 bg-[#5C0C99] hover:bg-[#5C0C99]/90 text-white text-center rounded-lg transition-colors font-medium shadow-sm"
                     >
-                      Browse Communities <ArrowRight className="ml-1 h-4 w-4" />
+                      Create New Community
                     </Link>
                   </div>
                 </div>
               </div>
-
-              {/* Urgent Deadline Tasks */}
-              <div className="mt-4p-3">
-                <div className="flex items-center mb-3">
-                  <Clock className="h-5 w-5 text-red-500 mr-2" />
-                  <h3 className="font-semibold">Urgent Deadline Tasks</h3>
-                </div>
-
-                {insights.deadlineTodo && insights.deadlineTodo.length > 0 ? (
-                  <div className="space-y-3">
-                    {insights.deadlineTodo.map((todo) => (
-                      <TodoCard
-                        key={todo.id}
-                        todo={todo}
-                        onUpdate={handleUpdate}
-                        onDelete={handleDelete}
-                      />
-                    ))}
-                  </div>
-                ) : (
-                  <div className="bg-gray-50 rounded-lg p-4 text-center text-gray-500">
-                    No urgent deadline tasks at the moment.
-                  </div>
-                )}
-              </div>
             </div>
           </div>
-
-          {/* Communities Section */}
-          <div className="lg:col-span-1">
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center">
-                  <Users className="h-5 w-5 text-[#5C0C99]/80 mr-2" />
-                  <h2 className="text-xl font-semibold">Your Communities</h2>
-                </div>
-                <Link
-                  href="/community"
-                  className="text-[#5C0C99] hover:text-[#5C0C99]/80 flex items-center text-sm"
-                >
-                  View All <ArrowRight className="ml-1 h-4 w-4" />
-                </Link>
-              </div>
-
-              {communities.length === 0 ? (
-                <div className="bg-gray-50 rounded-lg p-6 text-center text-gray-500">
-                  You aren&apos;t part of any communities yet. Join communities
-                  to collaborate.
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {communities.map((community) => (
-                    <CommunityCard key={community.id} community={community} />
-                  ))}
-                </div>
-              )}
-
-              <div className="mt-4 pt-4 border-t border-gray-100">
-                <Link
-                  href="/community"
-                  className="block w-full py-2 px-4 hover:bg-gray-100 text-[#5C0C99] text-center rounded-md transition-colors"
-                >
-                  Create New Community
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }
