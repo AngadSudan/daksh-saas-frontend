@@ -209,7 +209,7 @@ function TodoList() {
     ],
   };
 
-  const options = {
+  const options: import("chart.js").ChartOptions<"pie"> = {
     responsive: true,
     plugins: {
       legend: {
