@@ -23,6 +23,9 @@ function NotesForm({ onOpen, setOnOpen, chapterId }) {
     if (file) {
       formData.append("notes", file); // Append the selected file
     }
+    if (!file) {
+      return null;
+    }
 
     try {
       setLoading(true);
@@ -48,6 +51,8 @@ function NotesForm({ onOpen, setOnOpen, chapterId }) {
       window.location.reload();
     } catch (error) {
       console.error("Error uploading file:", error);
+      toast.error("error in file upload");
+      setLoading(false);
     }
   };
 
