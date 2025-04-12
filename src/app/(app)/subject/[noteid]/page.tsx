@@ -13,6 +13,7 @@ import {
   Eye,
   NotebookText,
   Computer,
+  AlertTriangle,
 } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -55,8 +56,12 @@ function DocumentViewer() {
           const url = response.data.data.documentLink;
           setDocumentUrl(url);
           setNoteDetails(response.data.data);
-          setText(response.data.data.summary.summary);
-          setQuizId(response.data.data.summary.id);
+          if (response.data.data.summary?.summary) {
+            setText(response.data.data.summary.summary);
+          }
+          if (response.data.data.summary?.quiz) {
+            setQuizId(response.data.data.summary.id);
+          }
           // Determine file type from URL
           if (url.toLowerCase().endsWith(".pdf")) {
             setFileType("pdf");
@@ -106,9 +111,9 @@ function DocumentViewer() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-100 to-blue-200">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-violet-100 to-violet-200">
         <div className="text-center bg-white p-8 rounded-lg shadow-lg">
-          <Loader className="animate-spin h-10 w-10 mx-auto mb-4 text-blue-500" />
+          <Loader className="animate-spin h-10 w-10 mx-auto mb-4 text-[#4E0684]" />
           <p className="text-gray-700 font-medium">
             Loading document viewer...
           </p>
@@ -119,7 +124,7 @@ function DocumentViewer() {
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-100 to-blue-200">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-violet-100 to-violet-200">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -157,7 +162,7 @@ function DocumentViewer() {
   // Apply fullscreen styles conditionally
   const mainContainerClass = fullScreen
     ? "fixed inset-0 z-50 bg-white"
-    : "min-h-screen flex flex-col bg-gradient-to-r from-blue-100 to-blue-200 p-4 md:p-6";
+    : "min-h-screen flex flex-col bg-gradient-to-r from-violet-100 to-violet-200 p-4 md:p-6";
 
   return (
     <div className={mainContainerClass}>
@@ -167,20 +172,20 @@ function DocumentViewer() {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="bg-white rounded-lg shadow-md p-4 md:p-6 mb-4 md:mb-6"
+          className="bg-white rounded-lg shadow-md p-4 md:p-6 mb-4"
         >
           <div className="flex flex-col md:flex-row md:justify-between md:items-start">
             <div className="flex flex-col">
               <Link
                 href="/community"
-                className="text-blue-500 flex items-center mb-2 hover:underline"
+                className="text-[#4E0684] flex items-center mb-2 hover:underline"
               >
                 <ArrowLeft className="mr-1 h-4 w-4" />
                 Back to Notes
               </Link>
 
               <div className="flex items-center mb-2">
-                <FileText className="h-5 w-5 text-blue-500 mr-2 flex-shrink-0" />
+                <FileText className="h-5 w-5 text-[4E0684]/90 mr-2 flex-shrink-0" />
                 <h1 className="text-xl md:text-2xl font-bold text-gray-800 break-words">
                   {noteDetails.title}
                 </h1>
@@ -195,8 +200,15 @@ function DocumentViewer() {
                 {noteDetails.description}
               </p>
 
-              <div className="flex flex-wrap gap-2 items-center mb-4 md:mb-0">
-                <span className="inline-flex items-center justify-center bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-1 rounded-full">
+              <p className="flex gap-1">
+                <AlertTriangle className="w-5 h-5 text-gray-500" />
+                <span className="text-gray-400 text-sm">
+                  If a download pop-up appears, then the file cannot be viewed
+                  in the web browser. Please download the file to view it.
+                </span>
+              </p>
+              {/* <div className="flex flex-wrap gap-2 items-center mb-4 md:mb-0">
+                <span className="inline-flex items-center justify-center bg-gray-100 text-[#4E0684] text-xs font-medium px-2.5 py-1 rounded-full">
                   {fileType.toUpperCase()}
                 </span>
                 {noteDetails.tags &&
@@ -208,7 +220,7 @@ function DocumentViewer() {
                       {tag}
                     </span>
                   ))}
-              </div>
+              </div> */}
             </div>
 
             <div className="flex gap-2 mt-4 md:mt-0">
@@ -218,38 +230,41 @@ function DocumentViewer() {
                 onClick={toggleFullWidth}
                 className={`flex items-center ${
                   view === "fullWidth"
-                    ? "bg-blue-100 text-blue-700"
+                    ? "bg-violet-100 text-[#4E0684]"
                     : "bg-gray-100 text-gray-700"
                 } px-3 py-2 rounded hover:bg-gray-200 transition-colors`}
               >
                 <Eye className="mr-2 h-4 w-4" />
                 {view === "fullWidth" ? "Show Chat" : "Full Width"}
               </motion.button>
-
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => {
-                  window.location.href = `${router.noteid}/quiz/${quizId}`;
-                }}
-                className={`flex items-center ${"bg-gray-100 text-gray-700"} px-3 py-2 rounded hover:bg-gray-200 transition-colors`}
-              >
-                <Computer className="mr-2 h-4 w-4" />
-                Take Quiz
-              </motion.button>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={toggleSummary}
-                className={`flex items-center ${
-                  view === "summary"
-                    ? "bg-blue-100 text-blue-700"
-                    : "bg-gray-100 text-gray-700"
-                } px-3 py-2 rounded hover:bg-gray-200 transition-colors`}
-              >
-                <NotebookText className="mr-2 h-4 w-4" />
-                {view === "summary" ? "Hide Summary" : "Show Summary"}
-              </motion.button>
+              {quizId && (
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => {
+                    window.location.href = `${router.noteid}/quiz/${quizId}`;
+                  }}
+                  className={`flex items-center ${"bg-gray-100 text-gray-700"} px-3 py-2 rounded hover:bg-gray-200 transition-colors`}
+                >
+                  <Computer className="mr-2 h-4 w-4" />
+                  Take Quiz
+                </motion.button>
+              )}
+              {text && (
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={toggleSummary}
+                  className={`flex items-center ${
+                    view === "summary"
+                      ? "bg-violet-100 text-[#4E0684]"
+                      : "bg-gray-100 text-gray-700"
+                  } px-3 py-2 rounded hover:bg-gray-200 transition-colors`}
+                >
+                  <NotebookText className="mr-2 h-4 w-4" />
+                  {view === "summary" ? "Hide Summary" : "Show Summary"}
+                </motion.button>
+              )}
 
               <motion.a
                 whileHover={{ scale: 1.05 }}
@@ -258,7 +273,7 @@ function DocumentViewer() {
                 download
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center bg-blue-500 text-white px-3 py-2 rounded hover:bg-blue-600 transition-colors"
+                className="flex items-center bg-[#4E0684] text-white px-3 py-2 rounded hover:bg-[#4E0684]/90 transition-colors"
               >
                 <Download className="mr-2 h-4 w-4" />
                 Download
@@ -297,7 +312,6 @@ function DocumentViewer() {
               )}
             </button>
           </div>
-
           {/* Document iframe */}
           {documentUrl && (
             <iframe
@@ -325,7 +339,7 @@ function DocumentViewer() {
         <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-10">
           <button
             onClick={toggleFullScreen}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-full shadow-lg hover:bg-blue-600 transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-[#4E0684] text-white rounded-full shadow-lg hover:bg-[#4E0684]/90 transition-colors"
           >
             <Minimize className="h-4 w-4" />
             Exit Fullscreen

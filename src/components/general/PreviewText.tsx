@@ -59,20 +59,20 @@ function PreviewText({ text }) {
   const getHeaderStyles = (level) => {
     switch (level) {
       case 1:
-        return "text-2xl font-bold text-blue-800 mt-6 mb-3";
+        return "text-2xl font-bold text-[#4E0684]/90 mt-6 mb-3";
       case 2:
-        return "text-xl font-semibold text-blue-700 mt-5 mb-3";
+        return "text-xl font-semibold text-[#4E0684]/90 mt-5 mb-3";
       case 3:
-        return "text-lg font-medium text-blue-600 mt-4 mb-2";
+        return "text-lg font-medium text-[#4E0684]/90 mt-4 mb-2";
       default:
-        return "text-base font-medium text-blue-500 mt-3 mb-2";
+        return "text-base font-medium text-[#4E0684]/90 mt-3 mb-2";
     }
   };
 
   return (
     <div className="h-full overflow-auto bg-white p-6">
       <div className="border-b border-gray-200 pb-3 mb-4">
-        <h2 className="text-xl font-semibold text-blue-700">
+        <h2 className="text-xl font-semibold text-[#4E0684]">
           Document Summary
         </h2>
       </div>

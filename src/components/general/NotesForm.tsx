@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Check } from "lucide-react";
+import { X, Check, Loader } from "lucide-react";
 import axios from "axios";
 import { toast, Toaster } from "react-hot-toast";
 function NotesForm({ onOpen, setOnOpen, chapterId }) {
@@ -10,6 +10,7 @@ function NotesForm({ onOpen, setOnOpen, chapterId }) {
     title: "",
     description: "",
   });
+  const [loading, setLoading] = useState(false);
 
   const [file, setFile] = useState(null);
 
@@ -24,6 +25,7 @@ function NotesForm({ onOpen, setOnOpen, chapterId }) {
     }
 
     try {
+      setLoading(true);
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/community/chapter/${chapterId}`,
         formData,
@@ -42,6 +44,7 @@ function NotesForm({ onOpen, setOnOpen, chapterId }) {
       }
       console.log("File uploaded successfully:", response.data.data);
       setOnOpen(false);
+      setLoading(false);
       window.location.reload();
     } catch (error) {
       console.error("Error uploading file:", error);
@@ -173,8 +176,18 @@ function NotesForm({ onOpen, setOnOpen, chapterId }) {
               type="submit"
               className="w-full bg-[#480179] text-white py-3 rounded-lg hover:bg-[#5C0C99] transition-colors flex items-center justify-center"
             >
-              <Check className="mr-2" size={20} />
-              List Notes
+              {loading && (
+                <>
+                  <Loader className="animate-spin h-6 w-6" />
+                  Uploading might take time...
+                </>
+              )}
+              {!loading && (
+                <>
+                  <Check className="mr-2" size={20} />
+                  Upload Notes
+                </>
+              )}
             </button>
           </motion.form>
         </motion.div>

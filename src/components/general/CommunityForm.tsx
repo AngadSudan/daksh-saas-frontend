@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { X, Save } from "lucide-react";
+import { X, Save, Loader } from "lucide-react";
 
 const CommunityEditForm = ({ communityData, onSubmit, onClose }) => {
   // Initial state from the provided community data
@@ -8,6 +8,9 @@ const CommunityEditForm = ({ communityData, onSubmit, onClose }) => {
     description: communityData.description || "",
     websiteUrl: communityData.websiteUrl || "",
   });
+
+  // Add loading state
+  const [isLoading, setIsLoading] = useState(false);
 
   // Handle input changes
   const handleChange = (e) => {
@@ -18,10 +21,18 @@ const CommunityEditForm = ({ communityData, onSubmit, onClose }) => {
     }));
   };
 
-  // Handle form submission
-  const handleSubmit = (e) => {
+  // Handle form submission with loading state
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSubmit(formData);
+    setIsLoading(true);
+
+    try {
+      await onSubmit(formData);
+    } catch (error) {
+      console.error("Error submitting form:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -32,11 +43,12 @@ const CommunityEditForm = ({ communityData, onSubmit, onClose }) => {
       >
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold text-[#480179] tracking-tight">
-            Edit Community
+            {communityData.id ? "Edit Community" : "Create Community"}
           </h2>
           <button
             onClick={onClose}
             className="text-gray-400 hover:text-gray-600 transition-colors"
+            disabled={isLoading}
           >
             <X size={24} />
           </button>
@@ -57,9 +69,11 @@ const CommunityEditForm = ({ communityData, onSubmit, onClose }) => {
               value={formData.name}
               onChange={handleChange}
               required
+              disabled={isLoading}
               className="w-full px-3 py-2 bg-[#480179] text-white 
                          border border-gray-700 rounded-md 
-                         focus:outline-none focus:ring-2 focus:ring-[#1A0330]"
+                         focus:outline-none focus:ring-2 focus:ring-[#1A0330]
+                         disabled:opacity-70 disabled:cursor-not-allowed"
             />
           </div>
 
@@ -76,10 +90,12 @@ const CommunityEditForm = ({ communityData, onSubmit, onClose }) => {
               value={formData.description}
               onChange={handleChange}
               required
+              disabled={isLoading}
               rows={4}
               className="w-full px-3 py-2 bg-[#480179] text-white 
                          border border-gray-700 rounded-md 
-                         focus:outline-none focus:ring-2 focus:ring-[#1A0330]"
+                         focus:outline-none focus:ring-2 focus:ring-[#1A0330]
+                         disabled:opacity-70 disabled:cursor-not-allowed"
             />
           </div>
 
@@ -96,9 +112,11 @@ const CommunityEditForm = ({ communityData, onSubmit, onClose }) => {
               name="websiteUrl"
               value={formData.websiteUrl}
               onChange={handleChange}
+              disabled={isLoading}
               className="w-full px-3 py-2 bg-[#480179] text-white 
                          border border-gray-700 rounded-md 
-                         focus:outline-none focus:ring-2 focus:ring-[#1A0330]"
+                         focus:outline-none focus:ring-2 focus:ring-[#1A0330]
+                         disabled:opacity-70 disabled:cursor-not-allowed"
             />
           </div>
 
@@ -106,19 +124,32 @@ const CommunityEditForm = ({ communityData, onSubmit, onClose }) => {
             <button
               type="button"
               onClick={onClose}
+              disabled={isLoading}
               className="px-4 py-2 bg-gray-700 text-white rounded-md 
-                         hover:bg-gray-600 transition-colors"
+                         hover:bg-gray-600 transition-colors
+                         disabled:opacity-70 disabled:cursor-not-allowed"
             >
               Cancel
             </button>
             <button
               type="submit"
+              disabled={isLoading}
               className="px-4 py-2 bg-[#1A0330] text-white rounded-md 
                          hover:bg-opacity-90 transition-colors 
-                         flex items-center gap-2"
+                         flex items-center gap-2
+                         disabled:opacity-70 disabled:cursor-not-allowed"
             >
-              <Save size={18} />
-              Save Changes
+              {isLoading ? (
+                <>
+                  <Loader size={18} className="animate-spin" />
+                  {communityData.id ? "Saving..." : "Creating..."}
+                </>
+              ) : (
+                <>
+                  <Save size={18} />
+                  {communityData.id ? "Save Changes" : "Create Community"}
+                </>
+              )}
             </button>
           </div>
         </form>

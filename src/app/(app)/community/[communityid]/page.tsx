@@ -29,6 +29,7 @@ function CommunitySubjectsPage() {
   const [selectedSubject, setSelectedSubject] = useState(null);
   const [selectedChapter, setSelectedChapter] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isCreatingNew, setIsCreatingNew] = useState(false);
   const [error, setError] = useState(null);
   const [newSubject, setNewSubject] = useState(false);
   const [Notes, setNotes] = useState([]);
@@ -79,7 +80,7 @@ function CommunitySubjectsPage() {
       }
     };
     fetchData();
-    console.log(admin);
+    // console.log(admin);
   }, [router.communityid]);
 
   useEffect(() => {
@@ -116,6 +117,7 @@ function CommunitySubjectsPage() {
     if (!chapterform.name.trim()) return;
 
     try {
+      setIsCreatingNew(true);
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/community/subject/${subject}`,
         {
@@ -133,6 +135,8 @@ function CommunitySubjectsPage() {
       } else {
         toast.success(response.data.message);
       }
+
+      setIsCreatingNew(false);
       window.location.reload();
 
       // Update the subjects list with the new chapter
@@ -144,11 +148,6 @@ function CommunitySubjectsPage() {
         )
       );
 
-      if (response.data.error) {
-        toast.error(response.data.message);
-      } else {
-        toast.success(response.data.message);
-      }
       setChapterform({ name: "" });
       setNewChapter(false);
     } catch (error) {
@@ -168,7 +167,7 @@ function CommunitySubjectsPage() {
   useEffect(() => {
     const fetchNotes = async () => {
       if (!selectedChapter) return;
-
+      setIsCreatingNew(true);
       try {
         const response = await axios.get(
           `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/community/chapter/${selectedChapter.id}/notes`,
@@ -180,6 +179,7 @@ function CommunitySubjectsPage() {
           }
         );
         setNotes(response.data.data[0]?.notes || []);
+        setIsCreatingNew(false);
       } catch (error) {
         console.error("Failed to fetch notes:", error);
         setNotes([]);
@@ -244,6 +244,7 @@ function CommunitySubjectsPage() {
     if (!subjectform.name.trim()) return;
 
     try {
+      setIsCreatingNew(true);
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/community/${router.communityid}/add-subjects`,
         {
@@ -266,6 +267,7 @@ function CommunitySubjectsPage() {
       setSubjects((prev) => [...prev, response.data.data]);
       setSubjectForm({ name: "" });
       setNewSubject(false);
+      setIsCreatingNew(false);
     } catch (error) {
       console.error("Failed to create subject:", error);
     }
@@ -346,8 +348,14 @@ function CommunitySubjectsPage() {
                   type="submit"
                   className="flex-1 bg-[#480179] text-white py-3 px-4 rounded-lg hover:bg-[#5C0C99] transition-colors flex items-center justify-center"
                 >
-                  <Check className="mr-2" size={18} />
-                  Add Chapter
+                  {isCreatingNew ? (
+                    <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
+                  ) : (
+                    <>
+                      <PlusCircle className="mr-2" size={18} />
+                      Add Chapter
+                    </>
+                  )}
                 </button>
               </div>
             </motion.form>
@@ -421,8 +429,14 @@ function CommunitySubjectsPage() {
                   type="submit"
                   className="flex-1 bg-[#480179] text-white py-3 px-4 rounded-lg hover:bg-[#5C0C99] transition-colors flex items-center justify-center"
                 >
-                  <Check className="mr-2" size={18} />
-                  Add Subject
+                  {isCreatingNew ? (
+                    <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
+                  ) : (
+                    <>
+                      <Check className="mr-2" size={18} />
+                      Add Subject
+                    </>
+                  )}
                 </button>
               </div>
             </motion.form>
@@ -593,8 +607,14 @@ function CommunitySubjectsPage() {
                   onClick={() => setNewSubject(true)}
                   className="flex items-center justify-center w-full bg-[#480179] text-white py-2.5 px-4 rounded-lg hover:bg-[#5C0C99] transition-colors"
                 >
-                  <PlusCircle className="w-4 h-4 mr-2" />
-                  <span className="font-medium">Create New Subject</span>
+                  {isCreatingNew ? (
+                    <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
+                  ) : (
+                    <>
+                      <PlusCircle className="w-4 h-4 mr-2" />
+                      Create New Subject
+                    </>
+                  )}
                 </button>
               )}
             </div>

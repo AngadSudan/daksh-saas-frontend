@@ -189,14 +189,14 @@ function LoginPage() {
               </div>
 
               {/* Forgot Password Link */}
-              <div className="flex justify-end">
+              {/* <div className="flex justify-end">
                 <Link
                   href="/forgot-password"
                   className="text-sm text-white/70 hover:text-white transition-colors"
                 >
                   Forgot password?
                 </Link>
-              </div>
+              </div> */}
 
               {/* Login Button */}
               <button
