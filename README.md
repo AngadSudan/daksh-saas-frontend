@@ -1,36 +1,129 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-## Getting Started
+# 🧠 Daksh - Frontend
 
-First, run the development server:
+This is the **frontend** for **Daksh**, a cutting-edge SaaS-based study assistant for students and educators. Built with **Next.js 14 App Router**, **TailwindCSS**, and **TypeScript**, it provides a clean, responsive, and intuitive user interface to interact with Daksh's AI-powered backend.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+---
+
+## 📁 Project Structure
+
+```
+src/
+│
+├── app/                        # Main application routing (Next.js App Router)
+│   ├── (auth)/                # Authentication routes (e.g., login, signup)
+│   ├── about/                 # About page
+│   ├── ai-assist/             # AI assistant features
+│   ├── community/             # Community dashboard & viewer
+│   │   └── [communityid]/     # Dynamic community ID route
+│   ├── contact/               # Contact page
+│   ├── home/                  # Homepage
+│   ├── privacy-policy/        # Privacy policy
+│   ├── subject/               # Subject-specific content
+│   ├── todo/                  # To-do dashboard
+│   ├── api/                   # Route handlers (for client-side API logic)
+│   ├── layout.tsx            # App-wide layout
+│   ├── middleware.ts         # Auth middleware (e.g., route guards)
+│   └── page.tsx              # Root landing page
+│
+├── components/                # Reusable UI components
+├── public/                    # Static assets (images, icons, etc.)
+├── styles/                    # Global styles (if separate from Tailwind)
+├── .env.local                 # Environment variables
+├── globals.css                # Global CSS (Tailwind entry point)
+├── tsconfig.json              # TypeScript config
+└── next.config.js             # Next.js configuration
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🚀 Getting Started
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 1️⃣ Prerequisites
 
-## Learn More
+- **Node.js** (v16+)
+- **npm** or **yarn**
+- **Backend API** should be running (see [Daksh Backend](https://github.com/your-repo/backend-daksh))
 
-To learn more about Next.js, take a look at the following resources:
+### 2️⃣ Setup
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+# Clone the repo
+git clone https://github.com/AngadSudan/daksh-saas-frontend.git
+cd daksh-saas-frontend
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+# Install dependencies
+npm install
 
-## Deploy on Vercel
+# Create local environment config
+cp .env.example .env.local
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+# Start development server
+npm run dev
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### 3️⃣ Build for Production
+
+```bash
+npm run build
+npm run start
+```
+
+---
+
+## 🌍 Environment Variables (`.env.local`)
+
+```env
+NEXT_PUBLIC_API_URL=https://your-backend-url.com
+NEXT_PUBLIC_CLOUDINARY_URL=your_cloudinary_link
+```
+
+---
+
+## 💡 Key Features
+
+- ⚡ **App Router (Next.js 14)** for scalable route-based architecture
+- 🎯 **Role-based dashboard** for Admins, Teachers & Students
+- 📚 **AI Assistant** for document summarization, quiz generation, etc.
+- 📝 **To-do and Daily Planner** management
+- 🧠 **Smart PDF & PPTX parsing** (via backend)
+- 🌐 **Notion & Google Calendar** integrations
+- 🔐 **JWT-based authentication** (frontend logic)
+- 🎨 **TailwindCSS** for fast and responsive UI
+
+---
+
+## 🔗 Backend Repository
+
+👉 [**Daksh Backend**](https://github.com/your-repo/backend-daksh)
+
+---
+
+## 🧪 Tech Stack
+
+- **Next.js 14 (App Directory)**
+- **React 18**
+- **TailwindCSS**
+- **TypeScript**
+- **Cloudinary** (file uploads)
+- **Prisma + PostgreSQL** (on backend)
+- **JWT Authentication**
+
+---
+
+## 🛡️ Security & Best Practices
+
+- 🔒 Uses `middleware.ts` for route protection
+- ✅ Secure API calls using tokens stored via `httpOnly` cookies
+- 📄 Environment variables are stored securely in `.env.local`
+
+---
+
+## 📬 Contact
+
+- **Author**: Angad Sudan  
+- **Frontend Repo**: [Daksh Frontend](https://github.com/AngadSudan/daksh-saas-frontend)  
+- **LinkedIn**: [linkedin.com/in/AngadSudan](https://linkedin.com/in/AngadSudan)  
+- **Email**: angadsudan453@example.com
+
+---
