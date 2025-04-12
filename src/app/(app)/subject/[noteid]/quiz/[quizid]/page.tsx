@@ -24,11 +24,10 @@ function Page() {
   });
 
   // Initialize user answers when questions are loaded
-  console.log(notes);
-  console.log(setQuizMode("SCQ"));
+
   useEffect(() => {
     if (singleCorrect.length > 0 && userGeneratedSCQResult.length === 0) {
-      console.log("Quiz data fetched:", singleCorrect);
+      // console.log("Quiz data fetched:", singleCorrect);
       setUserGeneratedSCQResult(Array(singleCorrect.length).fill(""));
     }
 
@@ -109,6 +108,8 @@ function Page() {
   };
 
   const directBack = () => {
+    console.log(notes);
+    console.log(setQuizMode("SCQ"));
     window.location.href = `/subject/${params.noteid}`;
   };
 
