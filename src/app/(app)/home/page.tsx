@@ -103,6 +103,7 @@ function DashboardPage() {
       } finally {
         setLoading(false);
         toast.success("Dashboard data loaded successfully!");
+        // console.log(insights);
       }
     };
 
@@ -302,7 +303,7 @@ function DashboardPage() {
                           </div>
                         </div>
                         <div className="bg-white/80 p-3 rounded-lg">
-                          <div className="text-xl font-bold text-green-600">
+                          <div className="text-xl font-bold text-violet-600">
                             {insights.CompletedTodos}
                           </div>
                           <div className="text-xs text-slate-500 font-medium">
@@ -365,28 +366,32 @@ function DashboardPage() {
                     </div>
 
                     {insights.deadlineTodo &&
-                    insights.deadlineTodo.length > 0 ? (
-                      <div className="space-y-4">
-                        {insights.deadlineTodo.map((todo) => (
-                          <TodoCard
-                            key={todo.id}
-                            todo={todo}
-                            onUpdate={handleUpdate}
-                            onDelete={handleDelete}
-                          />
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="bg-green-50 border border-green-100 rounded-lg p-6 text-center">
-                        <div className="mx-auto w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-3">
-                          <Calendar className="h-6 w-6 text-green-600" />
+                    insights.deadlineTodo.filter(
+                      (todo) => todo.status !== "COMPLETED"
+                    ).length === 0 ? (
+                      <div className="bg-violet-50 border border-violet-100 rounded-lg p-6 text-center">
+                        <div className="mx-auto w-12 h-12 bg-violet-100 rounded-full flex items-center justify-center mb-3">
+                          <Calendar className="h-6 w-6 text-violet-600" />
                         </div>
-                        <h3 className="text-green-800 font-medium mb-1">
+                        <h3 className="text-violet-800 font-medium mb-1">
                           All Caught Up!
                         </h3>
-                        <p className="text-green-600 text-sm">
+                        <p className="text-violet-600 text-sm">
                           No urgent deadline tasks at the moment.
                         </p>
+                      </div>
+                    ) : (
+                      <div className="space-y-4">
+                        {insights.deadlineTodo
+                          .filter((todo) => todo.status !== "COMPLETED")
+                          .map((todo) => (
+                            <TodoCard
+                              key={todo.id}
+                              todo={todo}
+                              onUpdate={handleUpdate}
+                              onDelete={handleDelete}
+                            />
+                          ))}
                       </div>
                     )}
                   </div>
@@ -430,7 +435,7 @@ function DashboardPage() {
                       </Link>
                     </div>
                   ) : (
-                    <div className="space-y-4">
+                    <div className="space-y-4 ">
                       {communities.map((community) => (
                         <CommunityCard
                           key={community.id}

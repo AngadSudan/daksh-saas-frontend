@@ -17,6 +17,9 @@ import {
   ListTodo,
 } from "lucide-react";
 import { toast, Toaster } from "react-hot-toast";
+import { Pie } from "react-chartjs-2";
+import { Chart as ChartJS, ArcElement, Tooltip, Legend, Title } from "chart.js";
+ChartJS.register(ArcElement, Tooltip, Legend, Title);
 
 function TodoList() {
   const [todos, setTodos] = useState([]);
@@ -188,6 +191,36 @@ function TodoList() {
     (todo) => todo.status === "COMPLETED"
   ).length;
 
+  const data = {
+    labels: ["Completed", "Pending"],
+    datasets: [
+      {
+        label: "Task Management Tracking",
+        data: [pendingCount, completedCount],
+        backgroundColor: [
+          "rgba(255, 206, 86, 0.9)",
+          // "rgba(54, 162, 235, 0.6)",
+          // "rgba(255, 99, 132, 0.6)",
+          "rgba(75, 192, 192, 0.9)",
+        ],
+        borderColor: "#fff",
+        borderWidth: 1,
+      },
+    ],
+  };
+
+  const options = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: "bottom",
+      },
+      title: {
+        display: true,
+        text: "Task Management Tracking",
+      },
+    },
+  };
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
       <Toaster
@@ -358,8 +391,8 @@ function TodoList() {
         </div>
 
         {/* Task Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          <div className="bg-white rounded-xl shadow-md p-4 flex items-center">
+        <div className="grid grid-cols-3 md:grid-cols-3 gap-4 mb-6">
+          <div className="bg-white rounded-xl shadow-md p-4 flex flex-col md:flex-row gap-3 items-center">
             <div className="bg-purple-100 p-3 rounded-lg mr-4">
               <ListTodo size={24} className="text-[#480179]" />
             </div>
@@ -369,7 +402,7 @@ function TodoList() {
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-md p-4 flex items-center ">
+          <div className="bg-white rounded-xl shadow-md p-4 flex flex-col md:flex-row gap-3 items-center ">
             <div className="bg-amber-100 p-3 rounded-lg mr-4">
               <Clock size={24} className="text-amber-500" />
             </div>
@@ -379,7 +412,7 @@ function TodoList() {
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-md p-4 flex items-center ">
+          <div className="bg-white rounded-xl shadow-md p-4 flex flex-col md:flex-row gap-3 items-center ">
             <div className="bg-green-100 p-3 rounded-lg mr-4">
               <CheckCircle size={24} className="text-green-500" />
             </div>
@@ -483,25 +516,32 @@ function TodoList() {
               )}
             </motion.div>
           ) : (
-            <div className="space-y-4">
-              <AnimatePresence>
-                {filteredTodos.map((todo) => (
-                  <motion.div
-                    key={todo.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, x: -100 }}
-                    transition={{ duration: 0.3 }}
-                    layout
-                  >
-                    <TodoCard
-                      todo={todo}
-                      onUpdate={handleUpdate}
-                      onDelete={handleDelete}
-                    />
-                  </motion.div>
-                ))}
-              </AnimatePresence>
+            <div className="space-y-4 flex flex-col md:flex-row gap-6 ">
+              <div className="w-full h-[400px] md:w-1/3">
+                <Pie data={data} options={options} />
+              </div>
+
+              <div className="h-[400px] overflow-y-scroll w-fit mx-auto md:mx-0 md:w-2/3 scrollbar-hide">
+                <AnimatePresence>
+                  {filteredTodos.map((todo) => (
+                    <motion.div
+                      key={todo.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, x: -100 }}
+                      transition={{ duration: 0.3 }}
+                      layout
+                      className=" rounded-xl p-2 flex items-center gap-1"
+                    >
+                      <TodoCard
+                        todo={todo}
+                        onUpdate={handleUpdate}
+                        onDelete={handleDelete}
+                      />
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
+              </div>
             </div>
           )}
         </div>

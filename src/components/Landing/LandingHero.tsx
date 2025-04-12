@@ -79,7 +79,7 @@ function HomeHero() {
         animate="visible"
         variants={textVariants}
       >
-        Master & Excel with <br className="hidden sm:block" />
+        Excel with <br className="block" />
         Enhanced Task and Notes Management
       </motion.h1>
 
@@ -97,7 +97,7 @@ function HomeHero() {
 
       <motion.div initial="hidden" animate="visible" variants={buttonVariants}>
         <Link
-          href="/"
+          href="/register"
           className="md:flex text-white block w-fit px-5 py-2 mx-auto mt-5 bg-linear-to-b from-[#5417A3] to-[#410F80] rounded-full items-center gap-4"
         >
           <span>Get Started Now</span>

@@ -34,16 +34,15 @@ function Features() {
   ];
   return (
     <div>
-      <h1 className="text-center text-[54px] text-[#1A1A1A] ">
-        Revolutionize Your Hiring with
-        <br />
-        AI- Driven Precision
+      <h1 className="text-center text-[48px] text-[#1A1A1A] ">
+        Revolutionize Your Resource
+        <br />& Task Management
       </h1>
       <p className="text-center text-[#6A6A6A] mb-4 text-[18px]">
         Leverage intelligent automation and AI-powered tools to simplify
-        recruitment and find <br /> the perfect candidates faster.
+        management within clicks.
       </p>
-      <div className="max-w-7xl gap-y-4 mx-auto grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-2 mt-8">
+      <div className="max-w-7xl w-[90%]  gap-y-4 mx-auto grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-2 mt-8">
         {features.map((feature, index) => {
           return (
             <FeatureCard

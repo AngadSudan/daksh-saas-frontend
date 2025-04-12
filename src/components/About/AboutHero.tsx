@@ -49,7 +49,10 @@ const AboutHero = () => {
 
           {/* Call to Action Buttons */}
           <div className="flex justify-center space-x-4">
-            <button className="group flex items-center bg-[#5705BC] hover:bg-[#480179] text-white font-bold py-3 px-6 rounded-full transition duration-300 transform hover:-translate-y-1 shadow-lg hover:shadow-xl">
+            <button
+              onClick={() => (window.location.href = "/login")}
+              className="group flex items-center bg-[#5705BC] hover:bg-[#480179] text-white font-bold py-3 px-6 rounded-full transition duration-300 transform hover:-translate-y-1 shadow-lg hover:shadow-xl"
+            >
               <span>Explore Platform</span>
               <Target className="ml-2 w-5 h-5 group-hover:rotate-45 transition-transform" />
             </button>
