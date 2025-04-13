@@ -1,5 +1,5 @@
 import React from "react";
-import { Mail, MapPin, Phone, ArrowRight } from "lucide-react";
+import { Mail, Phone, ArrowRight } from "lucide-react";
 import logo from "../../../public/logo.png";
 import Image from "next/image";
 import Link from "next/link";
