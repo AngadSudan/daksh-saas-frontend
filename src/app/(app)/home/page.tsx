@@ -13,6 +13,7 @@ import {
   BarChart3,
   Calendar,
   AlertCircle,
+  LogOut,
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -169,8 +170,19 @@ function DashboardPage() {
               alt="logo"
               className="w-[100px] h-[100px] object-contain"
             />
-
-            <h1 className="text-3xl font-bold text-slate-800">Dashboard</h1>
+            <div>
+              <h1 className="text-3xl font-bold text-slate-800">Dashboard</h1>
+              <div
+                onClick={() => {
+                  localStorage.clear();
+                  window.location.href = "/";
+                }}
+                className="flex gap-4 cursor-pointer items-center mt-2"
+              >
+                <LogOut className="h-7 w-7 text-violet-500" />
+                LogOut
+              </div>
+            </div>
           </div>
         </div>
 

@@ -14,14 +14,19 @@ import {
   User,
   Upload,
   Folder,
+  MessageCircleReply,
+  Inbox,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import NotesCard from "@/components/general/NotesCard";
 import TodoRoute from "@/components/general/TodoRoute";
+import CommunityParticipants from "@/components/general/CommunityParticipants";
 // import { Skeleton } from "@/components/ui/skeleton";
 import NotesForm from "@/components/general/NotesForm";
 import Participants from "@/components/general/Participants";
 import { toast, Toaster } from "react-hot-toast";
+import SeeAnnouncements from "@/components/general/SeeAnnouncements";
+import SeeDoubts from "@/components/general/SeeDoubts";
 function CommunitySubjectsPage() {
   const router = useParams();
   const [communityName, setCommunityName] = useState("");
@@ -45,6 +50,9 @@ function CommunitySubjectsPage() {
     name: "",
   });
   const [notesUpload, setNotesUpload] = useState(false);
+  const [participants, setCommunityParticipants] = useState(false);
+  const [doubts, setDoubts] = useState(false);
+  const [accouncements, setAnnouncements] = useState(false);
   useEffect(() => {
     if (localStorage.getItem("user") === null) {
       window.location.href = "/login";
@@ -441,7 +449,25 @@ function CommunitySubjectsPage() {
           </motion.div>
         )}
       </AnimatePresence>
-
+      {accouncements && (
+        <SeeAnnouncements
+          setOnOpen={() => setAnnouncements(false)}
+          chapterId={selectedChapter.id}
+          creator={admin}
+        />
+      )}
+      {doubts && (
+        <SeeDoubts
+          setOnOpen={() => setDoubts(false)}
+          chapterId={selectedChapter.id}
+        />
+      )}
+      {/* Community Participants Modal */}
+      {participants && (
+        <CommunityParticipants
+          setOnOpen={() => setCommunityParticipants(false)}
+        />
+      )}
       {notesUpload && (
         <NotesForm
           onOpen={notesUpload}
@@ -489,13 +515,15 @@ function CommunitySubjectsPage() {
                   {communityName}
                 </h2>
               </div>
-              <button
-                onClick={() => setAddParticipant(true)}
-                className="p-2 text-gray-600 hover:bg-gray-200 rounded-full transition-colors"
-                title="Manage participants"
-              >
-                <User className="w-5 h-5" />
-              </button>
+              {admin && (
+                <button
+                  onClick={() => setAddParticipant(true)}
+                  className="p-2 text-gray-600 hover:bg-gray-200 rounded-full transition-colors"
+                  title="Manage participants"
+                >
+                  <User className="w-5 h-5" />
+                </button>
+              )}
             </div>
 
             <div className="flex-1 overflow-y-auto py-2 px-1">
@@ -600,6 +628,15 @@ function CommunitySubjectsPage() {
             </div>
 
             <div className="p-4 border-t mt-auto">
+              <button
+                onClick={() => setCommunityParticipants(true)}
+                className="flex items-center justify-center w-full my-5 bg-gray-200 text-[#5C0C99] py-2.5 px-4 rounded-lg hover:bg-[#5C0C99]/70 hover:text-white transition-colors"
+              >
+                <>
+                  <User className="w-4 h-4 mr-2" />
+                  See Members
+                </>
+              </button>
               {admin && (
                 <button
                   onClick={() => setNewSubject(true)}
@@ -665,15 +702,31 @@ function CommunitySubjectsPage() {
                   {selectedChapter?.name !== null && selectedChapter.name}
                 </h1>
               </div>
-              {admin && (
+              <div className="grid grid-cols-3 gap-4">
                 <button
-                  onClick={() => setNotesUpload(true)}
-                  className="flex items-center justify-center gap-2 bg-[#480179] text-white py-2.5 px-5 rounded-lg hover:bg-[#5C0C99] transition-colors shadow-sm"
+                  onClick={() => setDoubts(true)}
+                  className="flex items-center justify-center gap-2 text-[#480179] bg-gray-200 py-2.5 px-5 rounded-lg cursor-pointer transition-colors shadow-sm"
                 >
-                  <Upload className="w-4 h-4" />
-                  <span className="font-medium">Upload Notes</span>
+                  <MessageCircleReply className="w-7 h-7 bg-gray-200" />
+                  Doubts
                 </button>
-              )}
+                <button
+                  onClick={() => setAnnouncements(true)}
+                  className="flex items-center justify-center gap-2 text-[#480179] bg-gray-200 py-2.5 px-5 rounded-lg cursor-pointer transition-colors shadow-sm"
+                >
+                  <Inbox className="w-7 h-7 bg-gray-200" />
+                  Announcements
+                </button>
+                {admin && (
+                  <button
+                    onClick={() => setNotesUpload(true)}
+                    className="flex items-center justify-center gap-2 bg-[#480179] text-white py-2.5 px-5 rounded-lg hover:bg-[#5C0C99] transition-colors shadow-sm"
+                  >
+                    <Upload className="w-4 h-4" />
+                    <span className="font-medium">Upload Notes</span>
+                  </button>
+                )}
+              </div>
             </div>
 
             {Notes.length === 0 ? (
