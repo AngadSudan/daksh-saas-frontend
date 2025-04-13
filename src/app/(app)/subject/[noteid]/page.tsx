@@ -207,6 +207,15 @@ function DocumentViewer() {
                   in the web browser. Please download the file to view it.
                 </span>
               </p>
+              {!text && !quizId && (
+                <p className="flex gap-1">
+                  <AlertTriangle className="w-5 h-5 text-gray-500" />
+                  <span className="text-gray-400 text-sm">
+                    AI Summary and quiz is being generated or the document
+                    parsing failed.
+                  </span>
+                </p>
+              )}
               {/* <div className="flex flex-wrap gap-2 items-center mb-4 md:mb-0">
                 <span className="inline-flex items-center justify-center bg-gray-100 text-[#4E0684] text-xs font-medium px-2.5 py-1 rounded-full">
                   {fileType.toUpperCase()}
