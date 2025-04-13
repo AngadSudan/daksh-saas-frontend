@@ -108,7 +108,7 @@ function CommunitiesPage() {
   if (!isClient) return null; // Prevent rendering on the server
 
   return (
-    <div className="relative">
+    <div className="h-screen relative">
       <TodoRoute />
       <Toaster />
       <AnimatePresence>
