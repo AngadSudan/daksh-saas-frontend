@@ -64,7 +64,7 @@ const FeatureCard = ({ img, heading, description }) => {
       <Image
         src={img}
         alt="feature-image"
-        className="w-[753px] object-cover md:object-contain h-[265px] mb-4 border-[1px] border-[#5417A3] rounded-[10px]"
+        className="w-[753px] object-cover h-[265px] mb-4 border-[1px] border-[#5417A3] rounded-[10px]"
       />
       <h1 className="text-[#1A1A1A] ml-4  text-left font-[400] text-[30px]">
         {heading}
