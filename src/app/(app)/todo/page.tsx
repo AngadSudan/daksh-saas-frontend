@@ -192,7 +192,7 @@ function TodoList() {
   ).length;
 
   const data = {
-    labels: ["Completed", "Pending"],
+    labels: ["Pending", "Complete"],
     datasets: [
       {
         label: "Task Management Tracking",
