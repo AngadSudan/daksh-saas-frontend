@@ -208,7 +208,7 @@ function DocumentViewer() {
                 </span>
               </p>
               {!text && !quizId && (
-                <p className="flex gap-1">
+                <p className="flex my-1 gap-1">
                   <AlertTriangle className="w-5 h-5 text-gray-500" />
                   <span className="text-gray-400 text-sm">
                     AI Summary and quiz is being generated or the document
