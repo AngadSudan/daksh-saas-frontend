@@ -14,28 +14,28 @@ function Testimonials() {
       testimonial:
         "Daksh transformed the way I study! The AI-powered quizzes and summarization tools helped me grasp difficult concepts effortlessly.",
       imageSrc: t1,
-      name: "Aarav Khanna",
+      name: "Aaradhya",
       role: "Engineering Student",
     },
     {
       testimonial:
         "With Daksh, managing my study schedule has never been easier. The automated reminders and smart study plans keep me on track!",
       imageSrc: t2,
-      name: "Riya Patel",
+      name: "Ronak Patel",
       role: "Medical Student",
     },
     {
       testimonial:
         "The AI-driven PDF and PPT summarization feature is a game-changer! It saves me hours of revision and helps me retain information better.",
       imageSrc: t3,
-      name: "Karan Verma",
+      name: "Megha sharma",
       role: "MBA Aspirant",
     },
     {
       testimonial:
         "As a teacher, Daksh has helped me create engaging quizzes in seconds. The platform is intuitive, efficient, and a must-have for educators!",
       imageSrc: t4,
-      name: "Megha Sharma",
+      name: "karan verma",
       role: "Assistant Professor",
     },
     {

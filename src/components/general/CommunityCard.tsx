@@ -49,7 +49,7 @@ const CommunityCard = ({ community }) => {
         </div>
 
         {/* Description with improved container */}
-        <div className="mt-1 text-gray-600 text-sm leading-relaxed p-4 rounded-lg border border-gray-100">
+        <div className="mt-1 line-clamp-1 text-gray-600 text-sm leading-relaxed p-4 rounded-lg border border-gray-100">
           <p>{community.description || "No description available"}</p>
         </div>
 
