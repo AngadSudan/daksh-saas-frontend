@@ -49,6 +49,7 @@ function CommunitySubjectsPage() {
   const [chapterform, setChapterform] = useState({
     name: "",
   });
+  const [creatorToken, setCreatorToken] = useState("");
   const [notesUpload, setNotesUpload] = useState(false);
   const [participants, setCommunityParticipants] = useState(false);
   const [doubts, setDoubts] = useState(false);
@@ -78,6 +79,7 @@ function CommunitySubjectsPage() {
         setIsAdmin(
           response.data.data.createdBy === localStorage.getItem("token")
         );
+        setCreatorToken(response.data.data.createdBy);
         setSubjects(response.data.data.subjects);
         setCommunityName(response.data.data.name);
         setIsLoading(false);
@@ -460,12 +462,14 @@ function CommunitySubjectsPage() {
         <SeeDoubts
           setOnOpen={() => setDoubts(false)}
           chapterId={selectedChapter.id}
+          CommunityCreator={creatorToken}
         />
       )}
       {/* Community Participants Modal */}
       {participants && (
         <CommunityParticipants
           setOnOpen={() => setCommunityParticipants(false)}
+          isAdmin={creatorToken === localStorage.getItem("token")}
         />
       )}
       {notesUpload && (

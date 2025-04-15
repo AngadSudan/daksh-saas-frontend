@@ -3,10 +3,10 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Toaster } from "react-hot-toast";
-import { X, Search } from "lucide-react";
+import toast, { Toaster } from "react-hot-toast";
+import { X, Search, Trash2 } from "lucide-react";
 
-function CommunityParticipants({ setOnOpen }) {
+function CommunityParticipants({ setOnOpen, isAdmin }) {
   const [participants, setParticipants] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -91,8 +91,10 @@ function CommunityParticipants({ setOnOpen }) {
                 return (
                   <ParticipantCard
                     key={index}
+                    id={participant.id}
                     email={participant.user.email}
                     name={participant.user.name}
+                    admin={isAdmin}
                   />
                 );
               })
@@ -108,16 +110,58 @@ function CommunityParticipants({ setOnOpen }) {
   );
 }
 
-const ParticipantCard = ({ email, name }) => (
-  <div className="flex items-center bg-white rounded-lg shadow-md p-3 gap-3 hover:shadow-lg transition-all border border-gray-100 mb-2">
-    <div className="bg-gradient-to-r from-violet-500 to-violet-600 rounded-full h-10 w-10 flex items-center justify-center text-white font-bold">
-      {name.charAt(0).toUpperCase()}
+const ParticipantCard = ({ email, id, name, admin }) => {
+  const router = useParams();
+
+  const handleDelete = async () => {
+    try {
+      const response = await axios.delete(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/community/communities/${router.communityid}/participants/${id}`,
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("user")}`,
+          },
+        }
+      );
+
+      if (response.data.data) {
+        toast.success(response.data.message);
+        window.location.reload();
+      } else {
+        toast.error(response.data.error);
+      }
+    } catch (error) {
+      toast.error("Failed to delete participant");
+      console.error(error);
+    }
+  };
+
+  return (
+    <div className="flex items-center justify-between bg-white rounded-lg shadow-md p-3 gap-3 hover:shadow-lg transition-all border border-gray-100 mb-2">
+      <div className="flex items-center gap-3 flex-grow overflow-hidden">
+        <div className="bg-gradient-to-r from-violet-500 to-violet-600 rounded-full h-10 w-10 flex items-center justify-center text-white font-bold flex-shrink-0">
+          {name.charAt(0).toUpperCase()}
+        </div>
+        <div className="overflow-hidden">
+          <h3 className="font-semibold text-gray-800 truncate">{name}</h3>
+          <p className="text-sm text-gray-500 truncate">{email}</p>
+        </div>
+      </div>
+
+      {admin && (
+        <div className="flex-shrink-0 ml-2">
+          <button
+            onClick={handleDelete}
+            className="p-2 rounded-full hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-violet-500"
+            aria-label="Delete participant"
+          >
+            <Trash2 className="w-5 h-5 text-gray-500 hover:text-red-500" />
+          </button>
+        </div>
+      )}
     </div>
-    <div className="overflow-hidden">
-      <h3 className="font-semibold text-gray-800 truncate">{name}</h3>
-      <p className="text-sm text-gray-500 truncate">{email}</p>
-    </div>
-  </div>
-);
+  );
+};
 
 export default CommunityParticipants;

@@ -7,22 +7,19 @@ import {
   Clock,
   AlertCircle,
   Loader,
+  Trash2,
 } from "lucide-react";
 import { toast, Toaster } from "react-hot-toast";
 import axios from "axios";
 
-function SeeDoubts({ setOnOpen, chapterId }) {
+function SeeDoubts({ setOnOpen, chapterId, CommunityCreator }) {
   const [newDoubt, setNewDoubt] = useState("");
   const [loading, setLoading] = useState(false);
   const [doubts, setDoubts] = useState([]);
   const [isLoadingData, setIsLoadingData] = useState(true);
   const messagesEndRef = useRef(null);
   const messagesContainerRef = useRef(null);
-
-  //   useEffect(() => {
-  //     // Get current user ID from local storage on mount
-  //     const token = localStorage.getItem("token");
-  //   }, []);
+  const [disbleForSpam, setDisableForSpam] = useState(false);
 
   // Auto-scroll to bottom when messages change
   const scrollToBottom = () => {
@@ -41,6 +38,9 @@ function SeeDoubts({ setOnOpen, chapterId }) {
       return;
     }
     setLoading(true);
+    setDisableForSpam(true);
+    console.log("button disabled");
+
     try {
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/interaction/create-interaction`,
@@ -74,6 +74,10 @@ function SeeDoubts({ setOnOpen, chapterId }) {
       // console.log(error);
       toast.error(error.message || "Error creating doubt");
     } finally {
+      setInterval(() => {
+        setDisableForSpam(false);
+        console.log("button enabled");
+      }, 20000);
       setLoading(false);
     }
   };
@@ -167,12 +171,14 @@ function SeeDoubts({ setOnOpen, chapterId }) {
                 {doubts.map((doubt) => (
                   <DoubtMessage
                     key={doubt.id || `doubt-${doubt.createdAt}`}
+                    todoId={doubt.id}
                     message={doubt.message}
                     createdAt={doubt.createdAt}
                     formatDate={formatDate}
                     isCurrentUser={
                       doubt.raisedBy === localStorage.getItem("token")
                     }
+                    isAdmin={CommunityCreator === localStorage.getItem("token")}
                     userName={doubt.user?.name || "User"}
                   />
                 ))}
@@ -207,8 +213,12 @@ function SeeDoubts({ setOnOpen, chapterId }) {
                 }}
               />
               <button
-                onClick={handleCreation}
-                disabled={loading}
+                onClick={() => {
+                  if (!disbleForSpam) {
+                    handleCreation();
+                  }
+                }}
+                disabled={disbleForSpam}
                 className="bg-violet-600 hover:bg-violet-700 text-white px-4 rounded-r-lg flex items-center justify-center transition-colors"
               >
                 {loading ? (
@@ -231,10 +241,37 @@ const DoubtMessage = ({
   formatDate,
   isCurrentUser,
   userName,
+  isAdmin,
+  todoId,
 }) => {
+  const handleDelete = async () => {
+    try {
+      alert(todoId);
+      console.log(todoId);
+      if (!todoId) return;
+      const resposne = await axios.delete(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/interaction/delete-interaction/${todoId}`,
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("user")}`,
+          },
+        }
+      );
+      if (resposne.data.error) {
+        toast.error(resposne.data.message);
+      } else {
+        toast.success(resposne.data.message);
+      }
+
+      window.location.reload();
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <div
-      className={`flex my-1 ${
+      className={`flex my-1 items-center gap-2 ${
         isCurrentUser ? "justify-end" : "justify-start"
       } w-full`}
     >
@@ -266,6 +303,16 @@ const DoubtMessage = ({
           <span>{formatDate(createdAt)}</span>
         </div>
       </div>
+      {(isAdmin || isCurrentUser) && (
+        <div>
+          <Trash2
+            onClick={() => {
+              handleDelete();
+            }}
+            className="w-5 h-5 my-auto bg-gray-200"
+          />
+        </div>
+      )}
     </div>
   );
 };
