@@ -73,13 +73,11 @@ function NotesForm({ onOpen, setOnOpen, chapterId }) {
     ];
 
     if (!allowedTypes.includes(file.type)) {
-      alert("Only PDF and PPT/PPTX files are allowed.");
       event.target.value = ""; // Clear input
       return;
     }
 
     if (file.size > maxSize) {
-      alert("File size exceeds the 10 MB limit.");
       event.target.value = ""; // Clear input
       return;
     }

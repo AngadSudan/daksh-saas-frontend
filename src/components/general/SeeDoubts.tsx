@@ -246,7 +246,6 @@ const DoubtMessage = ({
 }) => {
   const handleDelete = async () => {
     try {
-      alert(todoId);
       console.log(todoId);
       if (!todoId) return;
       const resposne = await axios.delete(
