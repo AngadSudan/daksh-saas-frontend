@@ -17,7 +17,6 @@ function CommunitiesPage() {
   const [newCommunity, setNewCommunity] = useState({
     name: "",
     description: "",
-    websiteUrl: "",
   });
 
   const router = useRouter();
@@ -64,7 +63,7 @@ function CommunitiesPage() {
         }
         console.log(response.data.data);
         window.location.reload();
-        setNewCommunity({ name: "", description: "", websiteUrl: "" });
+        setNewCommunity({ name: "", description: "" });
         setOpenDialogBox(false);
       } catch (error) {
         console.error("Failed to create community", error);
@@ -138,13 +137,13 @@ function CommunitiesPage() {
               </button>
 
               <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
-                Create New Community
+                Create New Classroom
               </h2>
 
               {/* Community Name Input */}
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Community Name
+                  ClassRoom Name
                 </label>
                 <input
                   type="text"
@@ -152,7 +151,7 @@ function CommunitiesPage() {
                   value={newCommunity.name}
                   onChange={handleChange}
                   className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 border-gray-300 focus:ring-[#480179]"
-                  placeholder="Enter community name"
+                  placeholder="Enter classroom name"
                 />
               </div>
 
@@ -172,7 +171,7 @@ function CommunitiesPage() {
               </div>
 
               {/* Website URL Input */}
-              <div className="mb-6">
+              {/* <div className="mb-6">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Website URL (Optional)
                 </label>
@@ -184,7 +183,7 @@ function CommunitiesPage() {
                   className="w-full p-3 border border-gray-300 focus:ring-[#480179] rounded-lg focus:outline-none focus:ring-2"
                   placeholder="https://example.com"
                 />
-              </div>
+              </div> */}
 
               {/* Submit Button */}
               <button
@@ -192,7 +191,7 @@ function CommunitiesPage() {
                 className="w-full bg-[#480179] text-white py-3 rounded-lg hover:bg-[#5C0C99] transition-colors flex items-center justify-center"
               >
                 <Check className="mr-2" size={20} />
-                Create Community
+                Create ClassRoom
               </button>
             </motion.form>
           </motion.div>
@@ -206,14 +205,14 @@ function CommunitiesPage() {
               onClick={() => router.push("/home")}
               className="w-8 h-8 object-cover text-gray-400 cursor-pointer"
             />
-            <h1 className="text-3xl font-bold text-gray-800">My Communities</h1>
+            <h1 className="text-3xl font-bold text-gray-800">My Classroom</h1>
           </div>
           <button
             onClick={() => setOpenDialogBox(true)}
             className="flex items-center bg-[#480179] text-white px-4 py-2 rounded-lg hover:bg-[#480179]/80 transition-colors"
           >
             <PlusCircle className="mr-2" size={20} />
-            Create Community
+            Create Classroom
           </button>
         </div>
 
@@ -221,7 +220,7 @@ function CommunitiesPage() {
         <div className="mb-6 relative">
           <input
             type="text"
-            placeholder="Search communities..."
+            placeholder="Search classroom..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full p-3 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -264,19 +263,19 @@ function CommunitiesPage() {
               <Users className="w-8 h-8 text-[#480179]" />
             </div>
             <h3 className="text-xl font-semibold text-gray-700 mb-2">
-              No communities found
+              No classroom found
             </h3>
             <p className="text-gray-500 mb-6">
               {searchTerm
                 ? "Try a different search term"
-                : "Create your first community to get started"}
+                : "Create your first classroom to get started"}
             </p>
             <button
               onClick={() => setOpenDialogBox(true)}
               className="flex items-center bg-[#480179] text-white px-4 py-2 rounded-lg hover:bg-[#5C0C99] transition-colors mx-auto"
             >
               <PlusCircle className="mr-2" size={20} />
-              Create New Community
+              Create New classroom
             </button>
           </div>
         )}

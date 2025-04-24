@@ -54,7 +54,7 @@ const CommunityCard = ({ community }) => {
         </div>
 
         {/* Website URL with improved styling */}
-        {community.websiteUrl && (
+        {/* {community.websiteUrl && (
           <motion.a
             href={community.websiteUrl}
             target="_blank"
@@ -67,7 +67,7 @@ const CommunityCard = ({ community }) => {
             <span className="truncate flex-1">{community.websiteUrl}</span>
             <ExternalLink className="w-3 h-3 ml-2 flex-shrink-0" />
           </motion.a>
-        )}
+        )} */}
 
         {/* Footer section with updated date and action button */}
         <div className="mt-6 pt-4 border-t border-gray-100">

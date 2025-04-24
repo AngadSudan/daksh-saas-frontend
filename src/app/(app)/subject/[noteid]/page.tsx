@@ -251,7 +251,7 @@ function DocumentViewer() {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => {
-                    window.location.href = `${router.noteid}/quiz/${quizId}`;
+                    window.location.href = `${router.noteid}/quiz`;
                   }}
                   className={`flex items-center ${"bg-gray-100 text-gray-700"} px-3 py-2 rounded hover:bg-gray-200 transition-colors`}
                 >
@@ -342,7 +342,11 @@ function DocumentViewer() {
         {/* Right side panel - only show when not in fullWidth mode or fullScreen */}
         {view !== "fullWidth" && !fullScreen && (
           <div className="w-full md:w-2/5 bg-white rounded-lg shadow-lg overflow-hidden h-[75vh] mt-4 md:mt-0">
-            {view === "summary" ? <PreviewText text={text} /> : <Chatbot />}
+            {view === "summary" ? (
+              <PreviewText contentData={text} />
+            ) : (
+              <Chatbot />
+            )}
           </div>
         )}
       </div>

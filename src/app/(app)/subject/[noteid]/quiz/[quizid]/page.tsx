@@ -52,24 +52,26 @@ function Page() {
       if (typeof window !== "undefined") {
         try {
           const res = await axios.get(
-            `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/community/summary/${params.quizid}`,
+            `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/interaction/get-quiz/${params.quizid}`,
             {
               headers: {
                 Authorization: `Bearer ${localStorage.getItem("user")}`,
               },
             }
           );
-          setNotes(res.data.data.notes);
-          let quizResult = res.data.data.quiz;
-          // Clean up the quiz data
-          quizResult = quizResult.replaceAll("```", "'");
-          quizResult = quizResult.replace("'json", "'");
-          quizResult = quizResult.replaceAll("`", "'");
-          quizResult = quizResult.replaceAll("'", "");
-          quizResult = JSON.parse(quizResult);
+          console.log(res.data.data);
 
-          setSingleCorrect([...quizResult.quiz.single_correct]);
-          setMultiCorrect([...quizResult.quiz.multiple_correct]);
+          setNotes(res.data.data.notes);
+          // let quizResult = res.data.data.quiz;
+          // // Clean up the quiz data
+          // quizResult = quizResult.replaceAll("```", "'");
+          // quizResult = quizResult.replace("'json", "'");
+          // quizResult = quizResult.replaceAll("`", "'");
+          // quizResult = quizResult.replaceAll("'", "");
+          // quizResult = JSON.parse(quizResult);
+
+          setSingleCorrect([...res.data.data.dbQuestions]);
+          // setMultiCorrect([...quizResult.quiz.multiple_correct]);
         } catch (error) {
           console.error("Error fetching quiz data:", error);
         }
@@ -140,7 +142,7 @@ function Page() {
     singleCorrect.forEach((q, index) => {
       if (userGeneratedSCQResult[index] === "") {
         unattempted++;
-      } else if (userGeneratedSCQResult[index] === q.correct_answer) {
+      } else if (userGeneratedSCQResult[index] === q.answers) {
         correct++;
       } else {
         incorrect++;
@@ -174,8 +176,27 @@ function Page() {
     return { correct, incorrect, unattempted };
   };
 
-  const submitQuiz = () => {
+  const submitQuiz = async () => {
     const results = calculateResults();
+    //make a submission request
+    const response = await axios.post(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/interaction/submit-quiz/${params.quizid}`,
+      {
+        totalQuestion:
+          results.correct + results.incorrect + results.unattempted,
+        totalCorrectQuestion: results.correct,
+        totalWrongQuestion: results.incorrect,
+        totalAttemptedQuestion: results.correct + results.incorrect,
+      },
+      {
+        withCredentials: true,
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("user")}`,
+        },
+      }
+    );
+    console.log(response.data.data);
+
     setQuizStats(results);
     setIsSubmitted(true);
     setShowResults(true);
@@ -195,7 +216,7 @@ function Page() {
     if (!isSubmitted) return false;
 
     if (quizMode === "SCQ") {
-      return singleCorrect[currentQuestionIndex]?.correct_answer === option;
+      return singleCorrect[currentQuestionIndex]?.answers === option;
     } else {
       return multiCorrect[currentQuestionIndex]?.answers.includes(option);
     }
@@ -211,8 +232,7 @@ function Page() {
       if (userGeneratedSCQResult[index] === "")
         return "bg-gray-100 border-gray-400";
       // console.log("single correct ", singleCorrect[index]);
-      return userGeneratedSCQResult[index] ===
-        singleCorrect[index]?.correct_answer
+      return userGeneratedSCQResult[index] === singleCorrect[index]?.answers
         ? "bg-green-100 border-green-500"
         : "bg-red-100 border-red-500";
     }
@@ -414,7 +434,7 @@ function Page() {
                   isCorrect:
                     isSubmitted &&
                     userGeneratedSCQResult[index] ===
-                      singleCorrect[index]?.correct_answer,
+                      singleCorrect[index]?.answers,
                   isSubmitted,
                 }}
                 className={getQuestionStatusClass(index)}
