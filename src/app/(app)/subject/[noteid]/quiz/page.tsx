@@ -103,7 +103,7 @@ function Page() {
           withCredentials: true,
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            Authorization: `Bearer ${localStorage.getItem("user")}`,
           },
         }
       );
@@ -156,7 +156,7 @@ function Page() {
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-          {allQuiz.length > 0 ? (
+          {allQuiz?.length > 0 ? (
             allQuiz.map((quiz) => (
               <QuizCard quiz={quiz} key={quiz.id || quiz._id} />
             ))
