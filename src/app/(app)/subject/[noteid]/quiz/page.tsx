@@ -167,8 +167,8 @@ function Page() {
                 No quizzes yet
               </h3>
               <p className="text-gray-500 mt-2 max-w-md">
-                Create your first quiz by clicking the "Create Quiz" button
-                above
+                Create your first quiz by clicking the &quot;Create Quiz&quot;
+                button above
               </p>
             </div>
           )}
@@ -235,7 +235,7 @@ function Page() {
                       value={newQuiz.description}
                       onChange={handleChange}
                       placeholder="Enter quiz description"
-                      rows="3"
+                      rows={3}
                       className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-colors"
                     />
                   </div>

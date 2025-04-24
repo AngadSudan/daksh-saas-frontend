@@ -22,6 +22,7 @@ function Page() {
     incorrect: 0,
     unattempted: 0,
   });
+  console.log(setMultiCorrect);
 
   // Initialize user answers when questions are loaded
 

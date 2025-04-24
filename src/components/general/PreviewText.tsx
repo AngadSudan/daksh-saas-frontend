@@ -12,7 +12,8 @@ function StructuredPreview({ contentData }) {
     if (!text) return [];
 
     const results = [];
-    let currentText = text;
+    const currentText = text;
+    console.log(currentText);
 
     // Handle bold text (**text**)
     const boldRegex = /\*\*(.*?)\*\*/g;
@@ -109,7 +110,7 @@ function StructuredPreview({ contentData }) {
         const parts = [];
         let lastIdx = 0;
         let match;
-        let content = part.content;
+        const content = part.content;
 
         while ((match = italicRegex.exec(content)) !== null) {
           if (match.index > lastIdx) {
