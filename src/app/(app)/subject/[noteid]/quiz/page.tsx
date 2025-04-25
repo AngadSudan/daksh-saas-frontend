@@ -75,6 +75,8 @@ function Page() {
           const publishedQuizzes = quizzes.filter(
             (quiz) => quiz.isLive === "PUBLISHED"
           );
+          console.log(publishedQuizzes);
+
           setAllQuiz(publishedQuizzes);
         }
       } catch (error) {
