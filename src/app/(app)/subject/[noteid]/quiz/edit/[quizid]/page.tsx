@@ -96,7 +96,7 @@ function QuizEditor() {
 
   // Original questions data for comparison
   const [originalQuestions, setOriginalQuestions] = useState([]);
-  console.log(originalQuestions);
+  console.log("original Question is ", originalQuestions);
 
   useEffect(() => {
     const fetchQuizData = async () => {
@@ -114,7 +114,6 @@ function QuizEditor() {
               },
             }
           );
-          console.log("Fetched quiz data:", res.data.data.dbQuestions);
           const fetchedQuestions = res.data.data.dbQuestions || [];
           setQuestions(fetchedQuestions);
 
@@ -168,6 +167,8 @@ function QuizEditor() {
 
     const updatedOptions = [...editedQuestion.options];
     const oldValue = updatedOptions[index];
+    console.log(oldValue);
+
     updatedOptions[index] = value;
 
     // Check if the option being changed was the correct answer
@@ -179,6 +180,7 @@ function QuizEditor() {
       options: updatedOptions,
       answers: updatedAnswers,
     });
+    console.log(editedQuestion);
   };
 
   const toggleAnswerOption = (optionIndex) => {
@@ -187,7 +189,6 @@ function QuizEditor() {
     }
 
     const option = editedQuestion.options[optionIndex];
-    console.log("Option clicked:", option);
 
     // Toggle the answer: If the current option is already selected as the answer,
     // then deselect it (set to empty string), otherwise make it the answer
@@ -198,11 +199,8 @@ function QuizEditor() {
   };
 
   const saveCurrentQuestionToState = () => {
-    console.log("edited question is ", editedQuestion);
-
     const updatedQuestions = [...questions];
     updatedQuestions[currentQuestionIndex] = editedQuestion;
-    console.log("Saving question to state:", updatedQuestions);
     setQuestions(updatedQuestions);
     console.log(questions);
   };
@@ -223,25 +221,24 @@ function QuizEditor() {
         setSaving(false);
         return;
       }
-      console.log(modifiedQuestions);
+
+      console.log("Modified questions:", modifiedQuestions);
 
       // Prepare the data to be sent (keeping only the necessary fields)
-      const questionData = {
-        questions: modifiedQuestions.map((q) => ({
-          id: q.id,
-          quizId: q.quizId,
-          question: q.question,
-          options: q.options,
-          answers: q.answers,
-          visibility: q.visibility || "VISIBLE",
-        })),
-      };
+      const questionData = modifiedQuestions.map((q) => ({
+        id: q.id,
+        quizId: q.quizId,
+        question: q.question,
+        options: q.options,
+        answers: q.answers,
+        visibility: q.visibility || "VISIBLE",
+      }));
 
       console.log("Saving modified quiz data:", questionData);
 
       const response = await axios.patch(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/interaction/update-quiz/${params.quizid}`,
-        questions,
+        { questions: questionData }, // This is the correct structure
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("user")}`,
@@ -249,45 +246,45 @@ function QuizEditor() {
         }
       );
 
-      console.log("Update response:", response.data.data);
+      console.log("Update response:", response.data);
       toast.success(
         `Successfully updated ${modifiedQuestions.length} question(s)`
       );
+
+      // Refactor the quiz data fetching function
       const fetchQuizData = async () => {
         setLoading(true);
         setError(null);
 
-        // Client-side check to ensure we have access to localStorage
-        if (typeof window !== "undefined") {
-          try {
-            const res = await axios.get(
-              `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/interaction/get-quiz/${params.quizid}`,
-              {
-                headers: {
-                  Authorization: `Bearer ${localStorage.getItem("user")}`,
-                },
-              }
-            );
-            console.log("Fetched quiz data:", res.data.data.dbQuestions);
-            const fetchedQuestions = res.data.data.dbQuestions || [];
-            setQuestions(fetchedQuestions);
+        try {
+          const res = await axios.get(
+            `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/interaction/get-quiz/${params.quizid}`,
+            {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem("user")}`,
+              },
+            }
+          );
 
-            // Keep a copy of the original questions for comparison
-            setOriginalQuestions(JSON.parse(JSON.stringify(fetchedQuestions)));
+          const fetchedQuestions = res.data.data.dbQuestions || [];
+          setQuestions(fetchedQuestions);
 
-            // Reset modified questions tracking
-            setModifiedQuestionIds(new Set());
+          // Keep a copy of the original questions for comparison
+          setOriginalQuestions(JSON.parse(JSON.stringify(fetchedQuestions)));
 
-            setLoading(false);
-          } catch (error) {
-            console.error("Error fetching quiz data:", error);
-            setError("Failed to load quiz data. Please try again.");
-            setLoading(false);
-          }
+          // Reset modified questions tracking
+          setModifiedQuestionIds(new Set());
+
+          setLoading(false);
+        } catch (error) {
+          console.error("Error fetching quiz data:", error);
+          setError("Failed to load quiz data. Please try again.");
+          setLoading(false);
         }
       };
+
       // After successful update, refresh the quiz data
-      fetchQuizData();
+      await fetchQuizData();
     } catch (error) {
       console.error("Error saving quiz data:", error);
       toast.error("Failed to save changes. Please try again.");

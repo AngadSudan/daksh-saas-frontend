@@ -4,31 +4,44 @@ import axios from "axios";
 import { useParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import toast, { Toaster } from "react-hot-toast";
-import { X, Search, Trash2 } from "lucide-react";
+import { X, Search, Trash2, Users } from "lucide-react";
 
 function CommunityParticipants({ setOnOpen, isAdmin }) {
   const [participants, setParticipants] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   //api call for community participants
   const router = useParams();
 
   useEffect(() => {
-    const method = async () => {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/community/get-all-users/${router.communityid}`,
-        {
-          withCredentials: true,
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("user")}`,
-          },
-        }
-      );
+    const fetchParticipants = async () => {
+      setLoading(true);
+      try {
+        const response = await axios.get(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/community/get-all-users/${router.communityid}`,
+          {
+            withCredentials: true,
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("user")}`,
+            },
+          }
+        );
 
-      console.log(response.data.data);
-      setParticipants(response.data.data);
+        console.log(response.data.data);
+        setParticipants(response.data.data);
+        setError(null);
+      } catch (err) {
+        console.error("Failed to fetch participants:", err);
+        setError("Failed to fetch participants");
+        toast.error("Failed to load participants");
+      } finally {
+        setLoading(false);
+      }
     };
-    method();
+
+    fetchParticipants();
   }, [router.communityid]);
 
   // Filter participants based on search
@@ -86,21 +99,36 @@ function CommunityParticipants({ setOnOpen, isAdmin }) {
             className="bg-white h-[200px] p-5 overflow-y-scroll"
             onClick={(e) => e.stopPropagation()}
           >
-            {filteredParticipants.length > 0 ? (
-              filteredParticipants.map((participant, index) => {
-                return (
-                  <ParticipantCard
-                    key={index}
-                    id={participant.id}
-                    email={participant.user.email}
-                    name={participant.user.name}
-                    admin={isAdmin}
-                  />
-                );
-              })
-            ) : (
+            {loading ? (
+              <div className="flex flex-col items-center justify-center h-full">
+                <LoadingSpinner />
+                <p className="mt-3 text-gray-500">Loading participants...</p>
+              </div>
+            ) : error ? (
+              <div className="text-center text-red-500 py-8">
+                {error}. Please try again later.
+              </div>
+            ) : filteredParticipants.length > 0 ? (
+              filteredParticipants.map((participant, index) => (
+                <ParticipantCard
+                  key={index}
+                  id={participant.id}
+                  email={participant.user.email}
+                  name={participant.user.name}
+                  admin={isAdmin}
+                />
+              ))
+            ) : searchTerm ? (
               <div className="text-center text-gray-500 py-8">
-                No participants found
+                No participants match your search
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center h-full text-gray-500">
+                <Users size={48} className="text-gray-300 mb-3" />
+                <p className="font-medium">No members yet</p>
+                <p className="text-sm text-gray-400">
+                  This community doesn&apos;t have any participants
+                </p>
               </div>
             )}
           </div>
@@ -110,11 +138,25 @@ function CommunityParticipants({ setOnOpen, isAdmin }) {
   );
 }
 
+// Loading spinner component
+const LoadingSpinner = () => (
+  <div className="relative h-12 w-12">
+    <div className="absolute top-0 left-0 right-0 bottom-0">
+      <div className="h-12 w-12 rounded-full border-4 border-gray-200"></div>
+    </div>
+    <div className="absolute top-0 left-0 right-0 bottom-0">
+      <div className="h-12 w-12 rounded-full border-4 border-violet-500 border-t-transparent animate-spin"></div>
+    </div>
+  </div>
+);
+
 const ParticipantCard = ({ email, id, name, admin }) => {
   const router = useParams();
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const handleDelete = async () => {
     try {
+      setIsDeleting(true);
       const response = await axios.delete(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/community/communities/${router.communityid}/participants/${id}`,
         {
@@ -134,6 +176,8 @@ const ParticipantCard = ({ email, id, name, admin }) => {
     } catch (error) {
       toast.error("Failed to delete participant");
       console.error(error);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -153,10 +197,15 @@ const ParticipantCard = ({ email, id, name, admin }) => {
         <div className="flex-shrink-0 ml-2">
           <button
             onClick={handleDelete}
-            className="p-2 rounded-full hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-violet-500"
+            disabled={isDeleting}
+            className="p-2 rounded-full hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-violet-500 disabled:opacity-50"
             aria-label="Delete participant"
           >
-            <Trash2 className="w-5 h-5 text-gray-500 hover:text-red-500" />
+            {isDeleting ? (
+              <div className="h-5 w-5 border-2 border-gray-300 border-t-violet-500 rounded-full animate-spin"></div>
+            ) : (
+              <Trash2 className="w-5 h-5 text-gray-500 hover:text-red-500" />
+            )}
           </button>
         </div>
       )}

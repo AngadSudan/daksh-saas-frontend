@@ -22,6 +22,7 @@ import { toast, Toaster } from "react-hot-toast";
 function Page() {
   const params = useParams();
   const [adminToken, setAdminToken] = useState("");
+  const [admin, setAdmin] = useState(true);
   const [allQuiz, setAllQuiz] = useState([]);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -31,6 +32,7 @@ function Page() {
     number: 5,
     description: "",
   });
+  console.log(adminToken);
 
   const handleChange = (e) => {
     setNewQuiz({ ...newQuiz, [e.target.name]: e.target.value });
@@ -40,8 +42,6 @@ function Page() {
     const fetchAllQuiz = async () => {
       setIsLoading(true);
       try {
-        // let response= {};
-        // if(localStorage.getItem("token")===)
         const response = await axios.get(
           `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/interaction/get-all-quiz/${params.noteid}`,
           {
@@ -52,26 +52,29 @@ function Page() {
             },
           }
         );
-        const currentAdminToken =
-          response.data.data[0].notes.chapters.subject.community.createdBy;
-        // console.log(response.data);
-        if (response.data.data.length > 0) {
-          console.log(
-            response.data.data[0].notes.chapters.subject.community.createdBy
-          );
-          setAdminToken(currentAdminToken);
+
+        const quizzes = response?.data?.data || [];
+
+        if (quizzes.length === 0) {
+          setAdminToken("");
+          setAdmin(true);
+          setAllQuiz([]);
+          return;
         }
-        console.log("admin", currentAdminToken);
-        console.log("current", localStorage.getItem("token"));
+
+        const currentAdminToken =
+          quizzes[0]?.notes?.chapters?.subject?.community?.createdBy || "";
+
+        setAdminToken(currentAdminToken);
+        setAdmin(currentAdminToken === localStorage.getItem("token"));
 
         if (currentAdminToken === localStorage.getItem("token")) {
-          setAllQuiz(response.data.data);
+          setAllQuiz(quizzes);
         } else {
-          let updatedQuiz = response.data.data;
-          updatedQuiz = updatedQuiz.filter(
+          const publishedQuizzes = quizzes.filter(
             (quiz) => quiz.isLive === "PUBLISHED"
           );
-          setAllQuiz(updatedQuiz);
+          setAllQuiz(publishedQuizzes);
         }
       } catch (error) {
         toast.error("Failed to load quizzes");
@@ -161,7 +164,7 @@ function Page() {
             Test your knowledge with interactive quizzes
           </p>
         </div>
-        {adminToken === localStorage.getItem("token") && (
+        {admin && (
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
