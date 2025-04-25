@@ -57,7 +57,7 @@ function Page() {
 
         if (quizzes.length === 0) {
           setAdminToken("");
-          setAdmin(true);
+          setAdmin(false);
           setAllQuiz([]);
           return;
         }
@@ -68,7 +68,8 @@ function Page() {
         setAdminToken(currentAdminToken);
         setAdmin(currentAdminToken === localStorage.getItem("token"));
 
-        if (currentAdminToken === localStorage.getItem("token")) {
+        if (admin) {
+          console.log(quizzes);
           setAllQuiz(quizzes);
         } else {
           const publishedQuizzes = quizzes.filter(
