@@ -73,10 +73,10 @@ function Page() {
           setAllQuiz(quizzes);
         } else {
           const publishedQuizzes = quizzes.filter(
-            (quiz) => quiz.isLive === "PUBLISHED"
+            (quiz) => quiz.isLive?.trim().toUpperCase() === "PUBLISHED"
           );
-          console.log(publishedQuizzes);
 
+          console.log(publishedQuizzes);
           setAllQuiz(publishedQuizzes);
         }
       } catch (error) {
