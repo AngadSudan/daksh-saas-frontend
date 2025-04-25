@@ -117,6 +117,8 @@ function QuizEditor() {
           const fetchedQuestions = res.data.data.dbQuestions || [];
           setQuestions(fetchedQuestions);
 
+          console.log("Fetched questions:", fetchedQuestions);
+
           // Keep a copy of the original questions for comparison
           setOriginalQuestions(JSON.parse(JSON.stringify(fetchedQuestions)));
 
@@ -158,6 +160,14 @@ function QuizEditor() {
       ...editedQuestion,
       question: e.target.value,
     });
+
+    setQuestions((prevQuestions) =>
+      prevQuestions.map((question) =>
+        question.id === editedQuestion.id
+          ? { ...question, question: e.target.value }
+          : question
+      )
+    );
   };
 
   const handleOptionChange = (index, value) => {
@@ -180,6 +190,15 @@ function QuizEditor() {
       options: updatedOptions,
       answers: updatedAnswers,
     });
+
+    setQuestions((prevQuestions) =>
+      prevQuestions.map((question) =>
+        question.id === editedQuestion.id
+          ? { ...question, options: updatedOptions, answers: updatedAnswers }
+          : question
+      )
+    );
+
     console.log(editedQuestion);
   };
 
@@ -190,12 +209,26 @@ function QuizEditor() {
 
     const option = editedQuestion.options[optionIndex];
 
+    console.log("Toggling answer option:", option);
+    console.log("Current answer:", editedQuestion.answers);
+
     // Toggle the answer: If the current option is already selected as the answer,
     // then deselect it (set to empty string), otherwise make it the answer
     setEditedQuestion({
       ...editedQuestion,
       answers: editedQuestion.answers === option ? "" : option,
     });
+
+    setQuestions((prevQuestions) =>
+      prevQuestions.map((question) =>
+        question.id === editedQuestion.id
+          ? {
+              ...question,
+              answers: question.answers === option ? "" : option,
+            }
+          : question
+      )
+    );
   };
 
   const saveCurrentQuestionToState = () => {
@@ -215,6 +248,10 @@ function QuizEditor() {
       const modifiedQuestions = questions.filter((q) =>
         modifiedQuestionIds.has(q.id)
       );
+
+      console.log("Modified question IDs:", modifiedQuestionIds);
+      console.log("All questions:", questions);
+      console.log("Modified questions:", modifiedQuestions);
 
       if (modifiedQuestions.length === 0) {
         toast.success("No changes to save");
