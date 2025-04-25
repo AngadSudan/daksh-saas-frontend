@@ -114,6 +114,7 @@ function QuizEditor() {
               },
             }
           );
+          console.log("Response data:", res.data);
           const fetchedQuestions = res.data.data.dbQuestions || [];
           setQuestions(fetchedQuestions);
 
