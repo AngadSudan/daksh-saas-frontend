@@ -66,14 +66,22 @@ function Page() {
           quizzes[0]?.notes?.chapters?.subject?.community?.createdBy || "";
 
         setAdminToken(currentAdminToken);
+
+        const isAdmin = currentAdminToken === localStorage.getItem("token");
+        console.log(isAdmin);
+
         setAdmin(currentAdminToken === localStorage.getItem("token"));
 
-        if (admin) {
+        console.log(quizzes);
+        setAdmin(adminToken === localStorage.getItem("token"));
+        console.log("is Admin", admin);
+
+        if (isAdmin) {
           console.log(quizzes);
           setAllQuiz(quizzes);
         } else {
           const publishedQuizzes = quizzes.filter(
-            (quiz) => quiz.isLive?.trim().toUpperCase() === "PUBLISHED"
+            (quiz) => quiz.isLive === "PUBLISHED"
           );
 
           console.log(publishedQuizzes);
