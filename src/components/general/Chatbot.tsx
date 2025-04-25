@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { Bot, Send } from "lucide-react";
 import axios from "axios";
 
-const Chatbot = () => {
+const Chatbot = ({ text }) => {
   const [messages, setMessages] = useState([
     { id: 1, text: "Hello! How can I help you today?", isBot: true },
   ]);
@@ -38,6 +38,7 @@ const Chatbot = () => {
           {
             question: question,
             prevConversation: JSON.stringify(messages),
+            text: text,
           }
         );
 

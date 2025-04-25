@@ -345,7 +345,7 @@ function DocumentViewer() {
             {view === "summary" ? (
               <PreviewText contentData={text} />
             ) : (
-              <Chatbot />
+              <Chatbot text={text} />
             )}
           </div>
         )}

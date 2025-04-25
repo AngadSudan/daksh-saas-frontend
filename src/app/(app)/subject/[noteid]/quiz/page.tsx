@@ -11,6 +11,9 @@ import {
   Loader,
   AlertCircle,
   ArrowLeft,
+  MoreVertical,
+  Edit,
+  CheckCircle,
 } from "lucide-react";
 import { useParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -18,6 +21,7 @@ import { toast, Toaster } from "react-hot-toast";
 
 function Page() {
   const params = useParams();
+  const [adminToken, setAdminToken] = useState("");
   const [allQuiz, setAllQuiz] = useState([]);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -48,8 +52,27 @@ function Page() {
             },
           }
         );
-        console.log(response.data);
-        setAllQuiz(response.data.data);
+        const currentAdminToken =
+          response.data.data[0].notes.chapters.subject.community.createdBy;
+        // console.log(response.data);
+        if (response.data.data.length > 0) {
+          console.log(
+            response.data.data[0].notes.chapters.subject.community.createdBy
+          );
+          setAdminToken(currentAdminToken);
+        }
+        console.log("admin", currentAdminToken);
+        console.log("current", localStorage.getItem("token"));
+
+        if (currentAdminToken === localStorage.getItem("token")) {
+          setAllQuiz(response.data.data);
+        } else {
+          let updatedQuiz = response.data.data;
+          updatedQuiz = updatedQuiz.filter(
+            (quiz) => quiz.isLive === "PUBLISHED"
+          );
+          setAllQuiz(updatedQuiz);
+        }
       } catch (error) {
         toast.error("Failed to load quizzes");
         console.error(error);
@@ -80,7 +103,7 @@ function Page() {
           withCredentials: true,
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            Authorization: `Bearer ${localStorage.getItem("user")}`,
           },
         }
       );
@@ -107,6 +130,7 @@ function Page() {
           },
         }
       );
+      console.log(updatedResponse.data.data);
       setAllQuiz(updatedResponse.data.data);
     } catch (error) {
       toast.error("Error creating quiz");
@@ -137,15 +161,17 @@ function Page() {
             Test your knowledge with interactive quizzes
           </p>
         </div>
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => setIsFormOpen(true)}
-          className="flex items-center px-4 py-2 bg-violet-600 hover:bg-violet-700 text-white rounded-lg shadow-md hover:shadow-lg transition-all duration-300"
-        >
-          <Plus size={18} className="mr-2" />
-          Create Quiz
-        </motion.button>
+        {adminToken === localStorage.getItem("token") && (
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setIsFormOpen(true)}
+            className="flex items-center px-4 py-2 bg-violet-600 hover:bg-violet-700 text-white rounded-lg shadow-md hover:shadow-lg transition-all duration-300"
+          >
+            <Plus size={18} className="mr-2" />
+            Create Quiz
+          </motion.button>
+        )}
       </div>
 
       {/* Quiz grid with loading state */}
@@ -293,6 +319,8 @@ function Page() {
 export default Page;
 
 const QuizCard = ({ quiz }) => {
+  const [showMenu, setShowMenu] = useState(false);
+
   // Format date for better readability
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -306,12 +334,52 @@ const QuizCard = ({ quiz }) => {
     });
   };
 
+  // Handle menu toggle
+  const toggleMenu = (e) => {
+    e.stopPropagation();
+    setShowMenu(!showMenu);
+  };
+
+  // Handle click on menu items
+  const handleApprove = async (status) => {
+    // e.stopPropagation();
+    // Logic to approve or set quiz offline
+    await axios.patch(
+      `${
+        process.env.NEXT_PUBLIC_BACKEND_URL
+      }/api/v1/interaction/toggle-status/${quiz.id || quiz._id}`,
+      { status },
+      {
+        withCredentials: true,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("user")}`,
+        },
+      }
+    );
+    window.location.reload();
+    setShowMenu(false);
+  };
+  const params = useParams();
+  console.log(params.noteid);
+
+  const handleEdit = (e) => {
+    e.stopPropagation();
+    // Logic to edit quiz
+    window.location.href = `quiz/edit/${quiz.id}`;
+    setShowMenu(false);
+  };
+
+  // Handle card click to navigate to quiz
+  const handleCardClick = () => {
+    window.location.href = `quiz/${quiz.id || quiz._id}`;
+  };
+
   return (
     <motion.div
       whileHover={{ y: -5, boxShadow: "0 10px 25px rgba(124, 58, 237, 0.15)" }}
       transition={{ duration: 0.3 }}
-      onClick={() => (window.location.href = `quiz/${quiz.id || quiz._id}`)}
-      className="rounded-xl overflow-hidden shadow-md border border-gray-100 bg-white cursor-pointer w-full"
+      className="rounded-xl overflow-hidden shadow-md border border-gray-100 bg-white cursor-pointer w-full relative"
     >
       {/* Top accent bar */}
       <div className="h-1 w-full bg-violet-600" />
@@ -324,9 +392,20 @@ const QuizCard = ({ quiz }) => {
               <div className="bg-violet-600 p-2 rounded-full shadow-sm mr-3">
                 <HelpCircle className="h-4 w-4 text-white" />
               </div>
-              <div>
+              <div className="flex space-x-2">
                 <span className="text-xs font-semibold uppercase tracking-wider text-violet-600 bg-violet-50 px-2 py-1 rounded">
                   Quiz
+                </span>
+                <span
+                  className={`text-xs font-semibold uppercase tracking-wider px-2 py-1 rounded ${
+                    quiz.isLive === "PUBLISHED"
+                      ? "text-green-600 bg-green-50"
+                      : quiz.isLive === "REJECTED"
+                      ? "text-red-600 bg-red-50"
+                      : "text-gray-600 bg-gray-50"
+                  }`}
+                >
+                  {quiz.isLive}
                 </span>
               </div>
             </div>
@@ -343,14 +422,74 @@ const QuizCard = ({ quiz }) => {
             </div>
           </div>
 
-          {/* Right side with call to action */}
+          {/* Right side with menu button */}
           <div className="ml-4 flex-shrink-0">
             <motion.div
               whileHover={{ scale: 1.1 }}
               className="bg-violet-100 p-2 rounded-full"
+              onClick={toggleMenu}
             >
-              <ChevronRight className="h-5 w-5 text-violet-600" />
+              <MoreVertical className="h-5 w-5 text-violet-600" />
             </motion.div>
+
+            {/* Dropdown menu */}
+            {showMenu && (
+              <div className="absolute z-10 right-6 mt-2 w-48 bg-white rounded-md shadow-lg py-1 ring-1 ring-black ring-opacity-5">
+                {/* //TODO: ADD 2 OPTIONS BASED ON WHAT THE STATUSES ARE */}
+                {quiz.isLive === "PUBLISHED" ? (
+                  <>
+                    <button
+                      onClick={() => handleApprove("REJECTED")}
+                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-violet-50 flex items-center"
+                    >
+                      <X className="h-4 w-4 mr-2 text-red-600" />
+                      Reject
+                    </button>
+                  </>
+                ) : quiz.isLive === "APPROVED" ? (
+                  <>
+                    <button
+                      onClick={() => handleApprove("REJECTED")}
+                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-violet-50 flex items-center"
+                    >
+                      <X className="h-4 w-4 mr-2 text-red-600" />
+                      Reject
+                    </button>
+                    <button
+                      onClick={() => handleApprove("PUBLISHED")}
+                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-violet-50 flex items-center"
+                    >
+                      <CheckCircle className="h-4 w-4 mr-2 text-green-600" />
+                      Publish
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <button
+                      onClick={() => handleApprove("APPROVED")}
+                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-violet-50 flex items-center"
+                    >
+                      <CheckCircle className="h-4 w-4 mr-2 text-green-600" />
+                      Approve
+                    </button>
+                    <button
+                      onClick={() => handleApprove("PUBLISHED")}
+                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-violet-50 flex items-center"
+                    >
+                      <CheckCircle className="h-4 w-4 mr-2 text-green-600" />
+                      Publish
+                    </button>
+                  </>
+                )}
+                <button
+                  onClick={handleEdit}
+                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-violet-50 flex items-center"
+                >
+                  <Edit className="h-4 w-4 mr-2 text-violet-600" />
+                  Edit Quiz
+                </button>
+              </div>
+            )}
           </div>
         </div>
 
@@ -363,13 +502,25 @@ const QuizCard = ({ quiz }) => {
 
           <motion.span
             whileHover={{ scale: 1.05 }}
+            onClick={handleCardClick}
             className="text-xs font-medium text-violet-600 bg-violet-50 px-3 py-1 rounded-full flex items-center"
           >
-            Start Quiz
+            Take Quiz
             <ChevronRight className="ml-1 h-3 w-3" />
           </motion.span>
         </div>
       </div>
+
+      {/* Click away listener - close menu when clicking outside */}
+      {showMenu && (
+        <div
+          className="fixed inset-0 z-0"
+          onClick={(e) => {
+            e.stopPropagation();
+            setShowMenu(false);
+          }}
+        />
+      )}
     </motion.div>
   );
 };
