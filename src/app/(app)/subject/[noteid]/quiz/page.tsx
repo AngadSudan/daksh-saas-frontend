@@ -198,7 +198,7 @@ function Page() {
         <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
           {allQuiz?.length > 0 ? (
             allQuiz.map((quiz) => (
-              <QuizCard quiz={quiz} key={quiz.id || quiz._id} />
+              <QuizCard quiz={quiz} key={quiz.id || quiz._id} isAdmin={admin} />
             ))
           ) : (
             <div className="col-span-full flex flex-col items-center justify-center py-16 text-center">
@@ -332,7 +332,7 @@ function Page() {
 
 export default Page;
 
-const QuizCard = ({ quiz }) => {
+const QuizCard = ({ quiz, isAdmin }) => {
   const [showMenu, setShowMenu] = useState(false);
 
   // Format date for better readability
@@ -437,74 +437,76 @@ const QuizCard = ({ quiz }) => {
           </div>
 
           {/* Right side with menu button */}
-          <div className="ml-4 flex-shrink-0">
-            <motion.div
-              whileHover={{ scale: 1.1 }}
-              className="bg-violet-100 p-2 rounded-full"
-              onClick={toggleMenu}
-            >
-              <MoreVertical className="h-5 w-5 text-violet-600" />
-            </motion.div>
+          {isAdmin && (
+            <div className="ml-4 flex-shrink-0">
+              <motion.div
+                whileHover={{ scale: 1.1 }}
+                className="bg-violet-100 p-2 rounded-full"
+                onClick={toggleMenu}
+              >
+                <MoreVertical className="h-5 w-5 text-violet-600" />
+              </motion.div>
 
-            {/* Dropdown menu */}
-            {showMenu && (
-              <div className="absolute z-10 right-6 mt-2 w-48 bg-white rounded-md shadow-lg py-1 ring-1 ring-black ring-opacity-5">
-                {/* //TODO: ADD 2 OPTIONS BASED ON WHAT THE STATUSES ARE */}
-                {quiz.isLive === "PUBLISHED" ? (
-                  <>
-                    <button
-                      onClick={() => handleApprove("REJECTED")}
-                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-violet-50 flex items-center"
-                    >
-                      <X className="h-4 w-4 mr-2 text-red-600" />
-                      Reject
-                    </button>
-                  </>
-                ) : quiz.isLive === "APPROVED" ? (
-                  <>
-                    <button
-                      onClick={() => handleApprove("REJECTED")}
-                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-violet-50 flex items-center"
-                    >
-                      <X className="h-4 w-4 mr-2 text-red-600" />
-                      Reject
-                    </button>
-                    <button
-                      onClick={() => handleApprove("PUBLISHED")}
-                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-violet-50 flex items-center"
-                    >
-                      <CheckCircle className="h-4 w-4 mr-2 text-green-600" />
-                      Publish
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <button
-                      onClick={() => handleApprove("APPROVED")}
-                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-violet-50 flex items-center"
-                    >
-                      <CheckCircle className="h-4 w-4 mr-2 text-green-600" />
-                      Approve
-                    </button>
-                    <button
-                      onClick={() => handleApprove("PUBLISHED")}
-                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-violet-50 flex items-center"
-                    >
-                      <CheckCircle className="h-4 w-4 mr-2 text-green-600" />
-                      Publish
-                    </button>
-                  </>
-                )}
-                <button
-                  onClick={handleEdit}
-                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-violet-50 flex items-center"
-                >
-                  <Edit className="h-4 w-4 mr-2 text-violet-600" />
-                  Edit Quiz
-                </button>
-              </div>
-            )}
-          </div>
+              {/* Dropdown menu */}
+              {showMenu && (
+                <div className="absolute z-10 right-6 mt-2 w-48 bg-white rounded-md shadow-lg py-1 ring-1 ring-black ring-opacity-5">
+                  {/* //TODO: ADD 2 OPTIONS BASED ON WHAT THE STATUSES ARE */}
+                  {quiz.isLive === "PUBLISHED" ? (
+                    <>
+                      <button
+                        onClick={() => handleApprove("REJECTED")}
+                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-violet-50 flex items-center"
+                      >
+                        <X className="h-4 w-4 mr-2 text-red-600" />
+                        Reject
+                      </button>
+                    </>
+                  ) : quiz.isLive === "APPROVED" ? (
+                    <>
+                      <button
+                        onClick={() => handleApprove("REJECTED")}
+                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-violet-50 flex items-center"
+                      >
+                        <X className="h-4 w-4 mr-2 text-red-600" />
+                        Reject
+                      </button>
+                      <button
+                        onClick={() => handleApprove("PUBLISHED")}
+                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-violet-50 flex items-center"
+                      >
+                        <CheckCircle className="h-4 w-4 mr-2 text-green-600" />
+                        Publish
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <button
+                        onClick={() => handleApprove("APPROVED")}
+                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-violet-50 flex items-center"
+                      >
+                        <CheckCircle className="h-4 w-4 mr-2 text-green-600" />
+                        Approve
+                      </button>
+                      <button
+                        onClick={() => handleApprove("PUBLISHED")}
+                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-violet-50 flex items-center"
+                      >
+                        <CheckCircle className="h-4 w-4 mr-2 text-green-600" />
+                        Publish
+                      </button>
+                    </>
+                  )}
+                  <button
+                    onClick={handleEdit}
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-violet-50 flex items-center"
+                  >
+                    <Edit className="h-4 w-4 mr-2 text-violet-600" />
+                    Edit Quiz
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Footer with metadata */}
