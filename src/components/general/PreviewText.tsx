@@ -106,3 +106,11 @@ function PreviewText({ text }) {
 }
 
 export default PreviewText;
+
+// {msg.content.map((item, i) => {
+
+//                                                             item.data = item.data.replace(/\\n/g, '\n').replaceAll("**", "").replace("**", "")
+
+//                                                             if (item.type === 'paragraph') {
+//                                                                 return <p key={i} className="whitespace-pre-wrap break-words">{item.data}</p>
+//                                                             } else if (item.type === 'co
