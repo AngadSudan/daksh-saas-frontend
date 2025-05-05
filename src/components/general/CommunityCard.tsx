@@ -1,5 +1,5 @@
 import React from "react";
-import { Users, Globe, Calendar, ExternalLink } from "lucide-react";
+import { Users, Calendar } from "lucide-react";
 import { motion } from "framer-motion";
 
 const CommunityCard = ({ community }) => {

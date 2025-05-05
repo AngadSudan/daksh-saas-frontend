@@ -2,7 +2,15 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams } from "next/navigation";
-import { ArrowLeft, ArrowRight, CheckCircle, PieChart } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  CheckCircle,
+  PieChart,
+  Flag,
+  X,
+  Home,
+} from "lucide-react";
 import QuestionCardOption from "@/components/general/EnhancedCard";
 
 function Page() {
@@ -17,18 +25,22 @@ function Page() {
   const [userGeneratedMCQResult, setUserGeneratedMCQResult] = useState([]);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [showResults, setShowResults] = useState(false);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [markedForReview, setMarkedForReview] = useState([]);
   const [quizStats, setQuizStats] = useState({
     correct: 0,
     incorrect: 0,
     unattempted: 0,
+    attempted: 0,
   });
+  console.log(setMultiCorrect);
 
   // Initialize user answers when questions are loaded
-
   useEffect(() => {
     if (singleCorrect.length > 0 && userGeneratedSCQResult.length === 0) {
       // console.log("Quiz data fetched:", singleCorrect);
       setUserGeneratedSCQResult(Array(singleCorrect.length).fill(""));
+      setMarkedForReview(Array(singleCorrect.length).fill(false));
     }
 
     if (multiCorrect.length > 0 && userGeneratedMCQResult.length === 0) {
@@ -52,24 +64,17 @@ function Page() {
       if (typeof window !== "undefined") {
         try {
           const res = await axios.get(
-            `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/community/summary/${params.quizid}`,
+            `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/interaction/get-quiz/${params.quizid}`,
             {
               headers: {
                 Authorization: `Bearer ${localStorage.getItem("user")}`,
               },
             }
           );
-          setNotes(res.data.data.notes);
-          let quizResult = res.data.data.quiz;
-          // Clean up the quiz data
-          quizResult = quizResult.replaceAll("```", "'");
-          quizResult = quizResult.replace("'json", "'");
-          quizResult = quizResult.replaceAll("`", "'");
-          quizResult = quizResult.replaceAll("'", "");
-          quizResult = JSON.parse(quizResult);
+          console.log(res.data.data);
 
-          setSingleCorrect([...quizResult.quiz.single_correct]);
-          setMultiCorrect([...quizResult.quiz.multiple_correct]);
+          setNotes(res.data.data.notes);
+          setSingleCorrect([...res.data.data.dbQuestions]);
         } catch (error) {
           console.error("Error fetching quiz data:", error);
         }
@@ -80,22 +85,14 @@ function Page() {
   }, [params.quizid]);
 
   const moveToNext = () => {
-    const maxIndex = singleCorrect.length - 1;
-
-    if (currentQuestionIndex < maxIndex) {
+    if (currentQuestionIndex < singleCorrect.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
-    } else {
-      setCurrentQuestionIndex(0);
     }
   };
 
   const moveBack = () => {
-    const maxIndex = singleCorrect.length - 1;
-
     if (currentQuestionIndex > 0) {
       setCurrentQuestionIndex(currentQuestionIndex - 1);
-    } else {
-      setCurrentQuestionIndex(maxIndex);
     }
   };
 
@@ -107,29 +104,20 @@ function Page() {
     setUserGeneratedSCQResult(newResults);
   };
 
+  const toggleMarkForReview = () => {
+    if (isSubmitted) return;
+
+    const newMarkedForReview = [...markedForReview];
+    newMarkedForReview[currentQuestionIndex] =
+      !newMarkedForReview[currentQuestionIndex];
+    setMarkedForReview(newMarkedForReview);
+  };
+
   const directBack = () => {
     console.log(notes);
     console.log(setQuizMode("SCQ"));
-    window.location.href = `/subject/${params.noteid}`;
+    window.location.href = `/subject/${params.noteid}/quiz`;
   };
-
-  // const handleMCQSelection = (selectedOption) => {
-  //   if (isSubmitted) return;
-
-  //   const newResults = [...userGeneratedMCQResult];
-  //   const currentSelections = newResults[currentQuestionIndex];
-
-  //   // Toggle selection
-  //   if (currentSelections.includes(selectedOption)) {
-  //     newResults[currentQuestionIndex] = currentSelections.filter(
-  //       (option) => option !== selectedOption
-  //     );
-  //   } else {
-  //     newResults[currentQuestionIndex] = [...currentSelections, selectedOption];
-  //   }
-
-  //   setUserGeneratedMCQResult(newResults);
-  // };
 
   const calculateResults = () => {
     let correct = 0;
@@ -140,45 +128,77 @@ function Page() {
     singleCorrect.forEach((q, index) => {
       if (userGeneratedSCQResult[index] === "") {
         unattempted++;
-      } else if (userGeneratedSCQResult[index] === q.correct_answer) {
+      } else if (userGeneratedSCQResult[index] === q.answers) {
         correct++;
       } else {
         incorrect++;
       }
     });
 
-    // The MCQ calculation is kept for future implementation
-    // This section is ready when you decide to enable MCQs
-    /*
-    multiCorrect.forEach((q, index) => {
-      if (userGeneratedMCQResult[index].length === 0) {
-        unattempted++;
-      } else {
-        // Check if arrays have the same elements
-        const userAnswers = [...userGeneratedMCQResult[index]].sort();
-        const correctAnswers = [...q.answers].sort();
-
-        const isCorrect =
-          userAnswers.length === correctAnswers.length &&
-          userAnswers.every((val, i) => val === correctAnswers[i]);
-
-        if (isCorrect) {
-          correct++;
-        } else {
-          incorrect++;
-        }
-      }
-    });
-    */
-
     return { correct, incorrect, unattempted };
   };
 
-  const submitQuiz = () => {
+  const initiateSubmit = () => {
+    // Calculate attempted/unattempted for confirmation dialog
+    const attempted = userGeneratedSCQResult.filter(
+      (answer) => answer !== ""
+    ).length;
+    const unattempted = singleCorrect.length - attempted;
+
+    // Set confirmation dialog data
+    setQuizStats({
+      ...quizStats,
+      attempted,
+      unattempted,
+    });
+
+    // Show confirmation dialog
+    setShowConfirmation(true);
+  };
+
+  const cancelSubmit = () => {
+    setShowConfirmation(false);
+  };
+
+  const submitQuiz = async () => {
     const results = calculateResults();
-    setQuizStats(results);
-    setIsSubmitted(true);
-    setShowResults(true);
+    //make a submission request
+    try {
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/interaction/submit-quiz/${params.quizid}`,
+        {
+          totalQuestion:
+            results.correct + results.incorrect + results.unattempted,
+          totalCorrectQuestion: results.correct,
+          totalWrongQuestion: results.incorrect,
+          totalAttemptedQuestion: results.correct + results.incorrect,
+        },
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("user")}`,
+          },
+        }
+      );
+      console.log(response.data.data);
+
+      setQuizStats({
+        ...results,
+        attempted: results.correct + results.incorrect,
+      });
+      setIsSubmitted(true);
+      setShowResults(true);
+      setShowConfirmation(false);
+    } catch (error) {
+      console.error("Error submitting quiz:", error);
+      setShowConfirmation(false);
+      // You might want to show an error message here
+    }
+  };
+
+  const closeQuiz = () => {
+    // Navigate back to home screen
+    window.location.href = `/subject/${params.noteid}/quiz`;
   };
 
   const isOptionSelected = (option) => {
@@ -195,24 +215,32 @@ function Page() {
     if (!isSubmitted) return false;
 
     if (quizMode === "SCQ") {
-      return singleCorrect[currentQuestionIndex]?.correct_answer === option;
+      return singleCorrect[currentQuestionIndex]?.answers === option;
     } else {
       return multiCorrect[currentQuestionIndex]?.answers.includes(option);
     }
   };
 
   const getQuestionStatusClass = (index) => {
+    // If not submitted yet
     if (!isSubmitted) {
+      if (markedForReview[index]) {
+        return userGeneratedSCQResult[index] !== ""
+          ? "bg-yellow-100 border-yellow-400"
+          : "bg-yellow-50 border-yellow-300";
+      }
       return userGeneratedSCQResult[index] !== ""
         ? "bg-violet-100 border-violet-400"
-        : "";
-    } else {
-      // After submission, show correct/incorrect
+        : "bg-gray-100 border-gray-200";
+    }
+    // After submission
+    else {
+      // Unattempted
       if (userGeneratedSCQResult[index] === "")
         return "bg-gray-100 border-gray-400";
-      // console.log("single correct ", singleCorrect[index]);
-      return userGeneratedSCQResult[index] ===
-        singleCorrect[index]?.correct_answer
+
+      // Correct or incorrect
+      return userGeneratedSCQResult[index] === singleCorrect[index]?.answers
         ? "bg-green-100 border-green-500"
         : "bg-red-100 border-red-500";
     }
@@ -251,8 +279,78 @@ function Page() {
     return totalQuestions > 0 ? Math.round((value / totalQuestions) * 100) : 0;
   };
 
+  // Get question status for the legend
+  const getQuestionStats = () => {
+    const attempted = userGeneratedSCQResult.filter(
+      (answer) => answer !== ""
+    ).length;
+    const markedCount = markedForReview.filter((marked) => marked).length;
+
+    return {
+      attempted,
+      unattempted: totalQuestions - attempted,
+      markedForReview: markedCount,
+    };
+  };
+  console.log(getQuestionStats);
+
+  // Get status for the current question
+  const getCurrentQuestionStatus = () => {
+    const isAttempted = userGeneratedSCQResult[currentQuestionIndex] !== "";
+    const isMarked = markedForReview[currentQuestionIndex];
+
+    if (isMarked) return "Marked for review";
+    if (isAttempted) return "Answered";
+    return "Not answered";
+  };
+
   return (
     <div className="relative flex gap-1 md:gap-4 h-screen w-full bg-gray-50">
+      {/* Confirmation Dialog */}
+      {showConfirmation && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-20">
+          <div className="bg-white rounded-xl p-6 max-w-md w-full shadow-2xl">
+            <h2 className="text-xl font-bold text-gray-800 mb-4">
+              Submit Quiz?
+            </h2>
+            <p className="text-gray-600 mb-4">
+              You are about to submit your quiz. Once submitted, you cannot
+              change your answers.
+            </p>
+
+            <div className="grid grid-cols-2 gap-4 mb-6">
+              <div className="bg-violet-50 p-3 rounded-lg text-center">
+                <p className="text-violet-800 font-bold text-xl">
+                  {quizStats?.attempted || 0}
+                </p>
+                <p className="text-violet-600">Attempted</p>
+              </div>
+              <div className="bg-gray-50 p-3 rounded-lg text-center">
+                <p className="text-gray-800 font-bold text-xl">
+                  {quizStats.unattempted || 0}
+                </p>
+                <p className="text-gray-600">Unattempted</p>
+              </div>
+            </div>
+
+            <div className="flex justify-end space-x-3">
+              <button
+                onClick={cancelSubmit}
+                className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={submitQuiz}
+                className="px-4 py-2 bg-[#4E0684] text-white rounded-lg hover:bg-[#3D0568]"
+              >
+                Submit
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="w-2/3 p-4 flex flex-col">
         {showResults && (
           <div className="absolute bg-black/50 inset-0 z-10 flex items-center justify-center">
@@ -296,12 +394,21 @@ function Page() {
                 </div>
               </div>
 
-              <button
-                onClick={() => setShowResults(false)}
-                className="mt-4 bg-violet-600 text-white py-2 px-6 rounded-lg hover:bg-[#4E0684] transition-colors"
-              >
-                Continue Reviewing
-              </button>
+              <div className="flex gap-4">
+                <button
+                  onClick={() => setShowResults(false)}
+                  className="mt-4 bg-violet-600 text-white py-2 px-6 rounded-lg hover:bg-[#4E0684] transition-colors"
+                >
+                  Continue Reviewing
+                </button>
+                <button
+                  onClick={closeQuiz}
+                  className="mt-4 bg-gray-700 text-white py-2 px-6 rounded-lg hover:bg-gray-800 transition-colors flex items-center"
+                >
+                  <Home className="mr-2 h-4 w-4" />
+                  Close Quiz
+                </button>
+              </div>
             </div>
           </div>
         )}
@@ -309,11 +416,24 @@ function Page() {
         {!showResults && (
           <div className="flex-1 bg-white rounded-xl shadow-xl p-6 mb-4">
             <div className="flex items-center justify-between mb-4">
-              <span className="bg-gray-100 text-[#4E0684] px-3 py-1 rounded-full text-sm font-medium">
-                <span className="hidden md:block"> Question </span>{" "}
-                {currentQuestionIndex + 1} of {singleCorrect.length}
-              </span>
-              <span className="bg-purple-100 text-purple-800 px-3 py-2  rounded-full text-sm font-medium">
+              <div className="flex items-center gap-3">
+                <span className="bg-gray-100 text-[#4E0684] px-3 py-1 rounded-full text-sm font-medium">
+                  <span className="hidden md:inline">Question</span>{" "}
+                  {currentQuestionIndex + 1} of {singleCorrect.length}
+                </span>
+                <span
+                  className={`px-3 py-1 rounded-full text-sm font-medium ${
+                    markedForReview[currentQuestionIndex]
+                      ? "bg-yellow-100 text-yellow-800"
+                      : userGeneratedSCQResult[currentQuestionIndex] !== ""
+                      ? "bg-violet-100 text-violet-800"
+                      : "bg-gray-100 text-gray-600"
+                  }`}
+                >
+                  {getCurrentQuestionStatus()}
+                </span>
+              </div>
+              <span className="bg-purple-100 text-purple-800 px-3 py-2 rounded-full text-sm font-medium">
                 Single Choice
               </span>
             </div>
@@ -337,6 +457,30 @@ function Page() {
                 </div>
               </>
             )}
+
+            {!isSubmitted && (
+              <div className="mt-6 flex justify-end">
+                <button
+                  onClick={toggleMarkForReview}
+                  className={`flex items-center px-4 py-2 rounded-lg text-sm transition-colors ${
+                    markedForReview[currentQuestionIndex]
+                      ? "bg-yellow-100 text-yellow-700 hover:bg-yellow-200"
+                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  }`}
+                >
+                  <Flag
+                    className={`h-4 w-4 mr-2 ${
+                      markedForReview[currentQuestionIndex]
+                        ? "text-yellow-500"
+                        : "text-gray-500"
+                    }`}
+                  />
+                  {markedForReview[currentQuestionIndex]
+                    ? "Marked for Review"
+                    : "Mark for Review"}
+                </button>
+              </div>
+            )}
           </div>
         )}
 
@@ -351,20 +495,29 @@ function Page() {
 
           {!isSubmitted ? (
             <button
-              onClick={submitQuiz}
+              onClick={initiateSubmit}
               className="flex items-center justify-center p-3 rounded-lg bg-[#4E0684]/80 text-white shadow-md hover:bg-[#4E0684] transition-colors"
             >
               <CheckCircle className="mr-2" />
               <p>Submit Quiz</p>
             </button>
           ) : (
-            <button
-              onClick={() => setShowResults(!showResults)}
-              className="flex items-center justify-center p-3 rounded-lg bg-purple-600 text-white shadow-md hover:bg-[#4E0684]/80 transition-colors"
-            >
-              <PieChart className="mr-2" />
-              <p>{showResults ? "Hide Results" : "Show Results"}</p>
-            </button>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setShowResults(!showResults)}
+                className="flex items-center justify-center p-3 rounded-lg bg-purple-600 text-white shadow-md hover:bg-[#4E0684]/80 transition-colors"
+              >
+                <PieChart className="mr-2" />
+                <p>{showResults ? "Hide Results" : "Show Results"}</p>
+              </button>
+              <button
+                onClick={closeQuiz}
+                className="flex items-center justify-center p-3 rounded-lg bg-gray-700 text-white shadow-md hover:bg-gray-800 transition-colors"
+              >
+                <X className="mr-2" />
+                <p>Close Quiz</p>
+              </button>
+            </div>
           )}
 
           <button
@@ -390,17 +543,39 @@ function Page() {
           <button className="px-4 py-2 rounded-full font-medium transition-colors bg-violet-600 text-white">
             Single Choice
           </button>
-          {/* MCQ button hidden for now - uncomment when ready to implement
-          <button
-            onClick={() => {
-              setQuizMode("MCQ");
-              setCurrentQuestionIndex(0);
-            }}
-            className="px-4 py-2 rounded-full font-medium transition-colors bg-white text-indigo-600 hover:bg-indigo-100"
-          >
-            Multiple Choice
-          </button>
-          */}
+        </div>
+
+        {/* Question status legend */}
+        <div className="bg-white rounded-lg p-3 mb-4 shadow-sm">
+          <h3 className="text-sm font-medium text-gray-700 mb-2">
+            Question Status
+          </h3>
+          <div className="grid grid-cols-3 gap-2 text-xs">
+            <div className="flex items-center">
+              <div className="w-3 h-3 rounded bg-violet-100 border border-violet-400 mr-1"></div>
+              <span>Answered</span>
+            </div>
+            <div className="flex items-center">
+              <div className="w-3 h-3 rounded bg-gray-100 border border-gray-200 mr-1"></div>
+              <span>Not Answered</span>
+            </div>
+            <div className="flex items-center">
+              <div className="w-3 h-3 rounded bg-yellow-100 border border-yellow-400 mr-1"></div>
+              <span>Marked for Review</span>
+            </div>
+            {isSubmitted && (
+              <>
+                <div className="flex items-center">
+                  <div className="w-3 h-3 rounded bg-green-100 border border-green-500 mr-1"></div>
+                  <span>Correct</span>
+                </div>
+                <div className="flex items-center">
+                  <div className="w-3 h-3 rounded bg-red-100 border border-red-500 mr-1"></div>
+                  <span>Incorrect</span>
+                </div>
+              </>
+            )}
+          </div>
         </div>
 
         <div className="flex-1 overflow-auto">
@@ -414,8 +589,9 @@ function Page() {
                   isCorrect:
                     isSubmitted &&
                     userGeneratedSCQResult[index] ===
-                      singleCorrect[index]?.correct_answer,
+                      singleCorrect[index]?.answers,
                   isSubmitted,
+                  isMarkedForReview: markedForReview[index],
                 }}
                 className={getQuestionStatusClass(index)}
                 onSelect={() => {
@@ -452,12 +628,34 @@ function Page() {
             ></div>
           </div>
 
-          <div className="flex justify-between mt-2 text-sm text-gray-600">
-            <span>
-              {userGeneratedSCQResult.filter((r) => r !== "").length} of{" "}
-              {singleCorrect.length}
-            </span>
-            <span>Questions Attempted</span>
+          <div className="grid grid-cols-2 gap-4 mt-3">
+            <div>
+              <div className="flex justify-between mt-2 text-sm text-gray-600">
+                <span>Attempted:</span>
+                <span className="font-medium">
+                  {userGeneratedSCQResult.filter((r) => r !== "").length}
+                </span>
+              </div>
+              <div className="flex justify-between mt-1 text-sm text-gray-600">
+                <span>Unattempted:</span>
+                <span className="font-medium">
+                  {singleCorrect.length -
+                    userGeneratedSCQResult.filter((r) => r !== "").length}
+                </span>
+              </div>
+            </div>
+            <div>
+              <div className="flex justify-between mt-2 text-sm text-gray-600">
+                <span>Total Questions:</span>
+                <span className="font-medium">{singleCorrect.length}</span>
+              </div>
+              <div className="flex justify-between mt-1 text-sm text-gray-600">
+                <span>Marked for Review:</span>
+                <span className="font-medium">
+                  {markedForReview.filter((m) => m).length}
+                </span>
+              </div>
+            </div>
           </div>
         </div>
       </div>

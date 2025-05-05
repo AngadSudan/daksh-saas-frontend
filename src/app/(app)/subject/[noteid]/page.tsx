@@ -26,6 +26,7 @@ function DocumentViewer() {
   const [noteDetails, setNoteDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [communityId, setCommunityId] = useState("");
   const [fileType, setFileType] = useState("");
   const [fullScreen, setFullScreen] = useState(false);
   const [view, setView] = useState("split"); // "split", "fullWidth", or "summary"
@@ -51,7 +52,10 @@ function DocumentViewer() {
             },
           }
         );
-        console.log(response.data.data);
+        console.log(response.data);
+
+        // console.log(response.data.data.chapters.subject.communityId);
+        setCommunityId(response.data.data.chapters.subject.communityId);
         if (response.data && response.data.data) {
           const url = response.data.data.documentLink;
           setDocumentUrl(url);
@@ -134,7 +138,7 @@ function DocumentViewer() {
           <h2 className="text-red-500 text-xl font-bold mb-4">Error</h2>
           <p className="text-gray-700 mb-4">{error}</p>
           <Link
-            href="/community"
+            href={`/community/${communityId}`}
             className="text-blue-500 flex items-center hover:underline"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
@@ -177,7 +181,7 @@ function DocumentViewer() {
           <div className="flex flex-col md:flex-row md:justify-between md:items-start">
             <div className="flex flex-col">
               <Link
-                href="/community"
+                href={`/community/${communityId}`}
                 className="text-[#4E0684] flex items-center mb-2 hover:underline"
               >
                 <ArrowLeft className="mr-1 h-4 w-4" />
@@ -251,7 +255,7 @@ function DocumentViewer() {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => {
-                    window.location.href = `${router.noteid}/quiz/${quizId}`;
+                    window.location.href = `${router.noteid}/quiz`;
                   }}
                   className={`flex items-center ${"bg-gray-100 text-gray-700"} px-3 py-2 rounded hover:bg-gray-200 transition-colors`}
                 >
@@ -342,7 +346,11 @@ function DocumentViewer() {
         {/* Right side panel - only show when not in fullWidth mode or fullScreen */}
         {view !== "fullWidth" && !fullScreen && (
           <div className="w-full md:w-2/5 bg-white rounded-lg shadow-lg overflow-hidden h-[75vh] mt-4 md:mt-0">
-            {view === "summary" ? <PreviewText text={text} /> : <Chatbot />}
+            {view === "summary" ? (
+              <PreviewText contentData={text} />
+            ) : (
+              <Chatbot text={text} />
+            )}
           </div>
         )}
       </div>
