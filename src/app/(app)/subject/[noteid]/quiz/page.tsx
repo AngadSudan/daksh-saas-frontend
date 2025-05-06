@@ -175,17 +175,15 @@ function Page() {
             Test your knowledge with interactive quizzes
           </p>
         </div>
-        {admin && (
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => setIsFormOpen(true)}
-            className="flex items-center px-4 py-2 bg-violet-600 hover:bg-violet-700 text-white rounded-lg shadow-md hover:shadow-lg transition-all duration-300"
-          >
-            <Plus size={18} className="mr-2" />
-            Create Quiz
-          </motion.button>
-        )}
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => setIsFormOpen(true)}
+          className="flex items-center px-4 py-2 bg-violet-600 hover:bg-violet-700 text-white rounded-lg shadow-md hover:shadow-lg transition-all duration-300"
+        >
+          <Plus size={18} className="mr-2" />
+          Create Quiz
+        </motion.button>
       </div>
 
       {/* Quiz grid with loading state */}
@@ -196,9 +194,9 @@ function Page() {
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-          {allQuiz?.length > 0 ? (
+          {allQuiz?.length >= 0 ? (
             allQuiz.map((quiz) => (
-              <QuizCard quiz={quiz} key={quiz.id || quiz._id} isAdmin={admin} />
+              <QuizCard quiz={quiz} key={quiz.id || quiz._id} isAdmin={true} />
             ))
           ) : (
             <div className="col-span-full flex flex-col items-center justify-center py-16 text-center">
