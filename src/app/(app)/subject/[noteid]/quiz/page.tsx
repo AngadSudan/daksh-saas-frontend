@@ -1,16 +1,3 @@
-<<<<<<< HEAD
-import React from "react";
-//display all the quiz associated with the noteid 
-
-function page() {
-  return <div>page</div>;
-}
-
-
-
-
-export default page;
-=======
 "use client";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
@@ -426,8 +413,8 @@ const QuizCard = ({ quiz, isAdmin }) => {
                     quiz.isLive === "PUBLISHED"
                       ? "text-green-600 bg-green-50"
                       : quiz.isLive === "REJECTED"
-                      ? "text-red-600 bg-red-50"
-                      : "text-gray-600 bg-gray-50"
+                        ? "text-red-600 bg-red-50"
+                        : "text-gray-600 bg-gray-50"
                   }`}
                 >
                   {quiz.isLive}
@@ -551,4 +538,3 @@ const QuizCard = ({ quiz, isAdmin }) => {
     </motion.div>
   );
 };
->>>>>>> fe5409bf883787bfe4fe633c1449127360733610
