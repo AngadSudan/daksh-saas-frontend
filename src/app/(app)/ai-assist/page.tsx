@@ -29,7 +29,7 @@ function Page() {
 
   return (
     <div style={{ textAlign: "justify", padding: "20px" }}>
-      <StructuredPreview contentData={content} />
+      {/* <StructuredPreview contentData={content} /> */}
     </div>
   );
 }
