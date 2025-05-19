@@ -362,7 +362,7 @@ function DocumentViewer() {
                   }}
                   style={{
                     height: "100vh",
-                    width: "50vw",
+                    width: "100vw",
                   }}
                   debug
                 />
