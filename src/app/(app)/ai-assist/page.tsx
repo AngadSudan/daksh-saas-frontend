@@ -1,7 +1,7 @@
 "use client";
 import axios from "axios";
 import React, { useEffect } from "react";
-
+import ReactViewAdobe from "react-adobe-embed";
 function Page() {
   const [content, setContent] = React.useState([]);
   useEffect(() => {
@@ -27,12 +27,33 @@ function Page() {
     getAiTextSummary();
   }, []);
 
+  const pdfUrl =
+    "https://res.cloudinary.com/djy3ewpb8/image/upload/v1745559880/notes/class10thEnglish.pdf_1745559756741.pdf";
+
   return (
     <div style={{ textAlign: "justify", padding: "20px" }}>
       {/* <StructuredPreview contentData={content} /> */}
+      <ReactViewAdobe
+        clientId={process.env.NEXT_PUBLIC_ADOBE_KEY}
+        title="Daksh Document"
+        url={pdfUrl}
+        id="pdf-brochure"
+        fileMeta={{
+          fileName: "Bodea Brochure",
+        }}
+        previewConfig={{
+          defaultViewMode: "SINGLE_PAGE",
+          showAnnotationTools: false,
+          showPageControls: true,
+          showDownloadPDF: true,
+        }}
+        style={{
+          height: "100vh",
+          width: "50vw",
+        }}
+      />
     </div>
   );
 }
 
 export default Page;
-

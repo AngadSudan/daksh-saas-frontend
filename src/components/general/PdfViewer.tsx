@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import * as pdfjsLib from "pdfjs-dist";
+import ReactViewAdobe from "react-adobe-embed";
 // Remove this import as it's not needed and could cause issues
 // import "pdfjs-dist/build/pdf.worker.min.mjs";
 
@@ -105,47 +106,25 @@ const PDFViewer = ({ pdfUrl }: { pdfUrl: string }) => {
 
   return (
     <div className="flex flex-col items-center gap-4">
-      <div className="overflow-auto max-w-full">
-        <canvas ref={canvasRef} className="shadow-xl border" />
-      </div>
-
-      <div className="flex gap-3 items-center justify-center">
-        <button
-          onClick={() => changePage(-1)}
-          disabled={pageNumber <= 1}
-          className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50"
-        >
-          ⬅ Prev
-        </button>
-        <span>
-          Page {pageNumber} of {totalPages}
-        </span>
-        <button
-          onClick={() => changePage(1)}
-          disabled={pageNumber >= totalPages}
-          className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50"
-        >
-          Next ➡
-        </button>
-      </div>
-
-      <div className="flex gap-3">
-        <button
-          onClick={() => adjustZoom(-0.25)}
-          className="px-3 py-1 bg-purple-100 rounded hover:bg-purple-200"
-        >
-          Zoom Out
-        </button>
-        <span className="px-3 py-1 bg-gray-100 rounded">
-          {Math.round(scale * 100)}%
-        </span>
-        <button
-          onClick={() => adjustZoom(0.25)}
-          className="px-3 py-1 bg-purple-100 rounded hover:bg-purple-200"
-        >
-          Zoom In
-        </button>
-      </div>
+      <ReactViewAdobe
+        clientId={process.env.NEXT_PUBLIC_ADOBE_KEY}
+        title="Daksh Document"
+        url={pdfUrl}
+        id="pdf-brochure"
+        fileMeta={{
+          fileName: "Bodea Brochure",
+        }}
+        previewConfig={{
+          defaultViewMode: "SINGLE_PAGE",
+          showAnnotationTools: false,
+          showPageControls: true,
+          showDownloadPDF: true,
+        }}
+        style={{
+          height: "100vh",
+          width: "50vw",
+        }}
+      />
     </div>
   );
 };
