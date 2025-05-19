@@ -7,7 +7,7 @@ import ReactViewAdobe from "react-adobe-embed";
 // import "pdfjs-dist/build/pdf.worker.min.mjs";
 
 // Set the worker source correctly
-pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+// pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
 
 const PDFViewer = ({ pdfUrl }: { pdfUrl: string }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
