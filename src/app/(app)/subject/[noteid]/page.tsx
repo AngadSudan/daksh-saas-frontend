@@ -359,6 +359,7 @@ function DocumentViewer() {
                     showAnnotationTools: false,
                     showPageControls: true,
                     showDownloadPDF: true,
+                    showZoomControl: true,
                   }}
                   style={{
                     height: "100vh",
