@@ -396,17 +396,17 @@ function Page() {
 
               <div className="flex gap-4">
                 <button
-                  onClick={() => setShowResults(false)}
-                  className="mt-4 bg-violet-600 text-white py-2 px-6 rounded-lg hover:bg-[#4E0684] transition-colors"
-                >
-                  Continue Reviewing
-                </button>
-                <button
                   onClick={closeQuiz}
                   className="mt-4 bg-gray-700 text-white py-2 px-6 rounded-lg hover:bg-gray-800 transition-colors flex items-center"
                 >
                   <Home className="mr-2 h-4 w-4" />
                   Close Quiz
+                </button>
+                <button
+                  onClick={() => setShowResults(false)}
+                  className="mt-4 bg-violet-600 text-white py-2 px-6 rounded-lg hover:bg-[#4E0684] transition-colors"
+                >
+                  Continue Reviewing
                 </button>
               </div>
             </div>
@@ -426,8 +426,8 @@ function Page() {
                     markedForReview[currentQuestionIndex]
                       ? "bg-yellow-100 text-yellow-800"
                       : userGeneratedSCQResult[currentQuestionIndex] !== ""
-                      ? "bg-violet-100 text-violet-800"
-                      : "bg-gray-100 text-gray-600"
+                        ? "bg-violet-100 text-violet-800"
+                        : "bg-gray-100 text-gray-600"
                   }`}
                 >
                   {getCurrentQuestionStatus()}

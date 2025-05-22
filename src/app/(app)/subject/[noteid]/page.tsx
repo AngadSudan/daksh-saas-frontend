@@ -328,20 +328,30 @@ function DocumentViewer() {
             </button>
           </div>
           {documentUrl && fileType === "pptx" && (
-            <iframe
-              src={getViewerUrl()}
-              className={`w-full border-none ${
-                fullScreen ? "h-[100svh]" : "h-[75vh]"
-              } max-w-full overflow-auto`}
-              title={noteDetails?.title || "Document Viewer"}
-              loading="lazy"
-              allowFullScreen
-              style={{
-                WebkitOverflowScrolling: "touch",
-                maxWidth: "100vw",
-              }}
-            />
+            <div
+              className={`relative w-full ${fullScreen ? "h-[100svh]" : "h-[75vh]"} max-w-full`}
+              style={{ overflow: "hidden" }}
+            >
+              <iframe
+                src={getViewerUrl()}
+                className="w-full h-full border-none"
+                title={noteDetails?.title || "Document Viewer"}
+                loading="lazy"
+                allowFullScreen
+                style={{
+                  WebkitOverflowScrolling: "touch",
+                  maxWidth: "100vw",
+                  height: "100%",
+                  width: "100%",
+                  minHeight: "400px",
+                }}
+              />
+            </div>
           )}
+
+          {/* Zoom controls component */}
+          {/* Place this component definition outside your main component */}
+          {/* You can move this to a separate file if you wish */}
           {/* Document iframe */}
           {documentUrl && fileType === "pdf" && (
             <>

@@ -14,6 +14,7 @@ import {
   MoreVertical,
   Edit,
   CheckCircle,
+  Camera,
 } from "lucide-react";
 import { useParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -22,15 +23,22 @@ import { toast, Toaster } from "react-hot-toast";
 function Page() {
   const params = useParams();
   const [adminToken, setAdminToken] = useState("");
-  const [admin, setAdmin] = useState(true);
+  const [admin, setAdmin] = useState(false);
   const [allQuiz, setAllQuiz] = useState([]);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  // set a new mode variable
+  const QuestionLength = {
+    EASY: 40,
+    MEDIUM: 30,
+    HARD: 15,
+  };
   const [newQuiz, setNewQuiz] = useState({
     title: "",
     number: 5,
     description: "",
+    mode: "EASY",
   });
   console.log(adminToken);
 
@@ -70,10 +78,11 @@ function Page() {
         const isAdmin = currentAdminToken === localStorage.getItem("token");
         console.log(isAdmin);
 
-        setAdmin(currentAdminToken === localStorage.getItem("token"));
+        // setAdmin(currentAdminToken === localStorage.getItem("token"));
+        setAdmin(isAdmin);
 
         console.log(quizzes);
-        setAdmin(adminToken === localStorage.getItem("token"));
+        setAdmin(currentAdminToken === localStorage.getItem("token"));
         console.log("is Admin", admin);
 
         if (isAdmin) {
@@ -112,6 +121,7 @@ function Page() {
           title: newQuiz.title,
           number: newQuiz.number,
           description: newQuiz.description,
+          mode: newQuiz.mode,
         },
         {
           withCredentials: true,
@@ -130,6 +140,7 @@ function Page() {
         title: "",
         number: 5,
         description: "",
+        mode: "EASY",
       });
       setIsFormOpen(false);
 
@@ -175,15 +186,17 @@ function Page() {
             Test your knowledge with interactive quizzes
           </p>
         </div>
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => setIsFormOpen(true)}
-          className="flex items-center px-4 py-2 bg-violet-600 hover:bg-violet-700 text-white rounded-lg shadow-md hover:shadow-lg transition-all duration-300"
-        >
-          <Plus size={18} className="mr-2" />
-          Create Quiz
-        </motion.button>
+        {admin && (
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setIsFormOpen(true)}
+            className="flex items-center px-4 py-2 bg-violet-600 hover:bg-violet-700 text-white rounded-lg shadow-md hover:shadow-lg transition-all duration-300"
+          >
+            <Plus size={18} className="mr-2" />
+            Create Quiz
+          </motion.button>
+        )}
       </div>
 
       {/* Quiz grid with loading state */}
@@ -196,7 +209,7 @@ function Page() {
         <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
           {allQuiz?.length >= 0 ? (
             allQuiz.map((quiz) => (
-              <QuizCard quiz={quiz} key={quiz.id || quiz._id} isAdmin={true} />
+              <QuizCard quiz={quiz} key={quiz.id || quiz._id} isAdmin={admin} />
             ))
           ) : (
             <div className="col-span-full flex flex-col items-center justify-center py-16 text-center">
@@ -280,6 +293,28 @@ function Page() {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Mode
+                    </label>
+                    <select
+                      name="mode"
+                      value={newQuiz.mode}
+                      onChange={(e) =>
+                        setNewQuiz({
+                          ...newQuiz,
+                          mode: e.target.value,
+                          number: 5,
+                        })
+                      }
+                    >
+                      {["EASY", "MEDIUM", "HARD"].map((text) => (
+                        <option value={text} key={text}>
+                          {text}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
                       Number of Questions: {newQuiz.number}
                     </label>
                     <div className="flex items-center gap-4">
@@ -288,7 +323,7 @@ function Page() {
                         name="number"
                         value={newQuiz.number}
                         min={1}
-                        max={100}
+                        max={QuestionLength[newQuiz.mode]}
                         onChange={handleChange}
                         step={1}
                         className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-violet-600"
@@ -501,6 +536,18 @@ const QuizCard = ({ quiz, isAdmin }) => {
                     <Edit className="h-4 w-4 mr-2 text-violet-600" />
                     Edit Quiz
                   </button>
+                  <button
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-violet-50 flex items-center"
+                    onClick={() => {
+                      window.location.href = `/subject/${params.noteid}/quiz/${quiz.id || quiz._id}/all-report`;
+                    }}
+                  >
+                    <Camera
+                      className="h-4 w-4 mr-2 text-violet-600"
+                      size={48}
+                    />
+                    View Full Report
+                  </button>
                 </div>
               )}
             </div>
@@ -514,6 +561,15 @@ const QuizCard = ({ quiz, isAdmin }) => {
             <span>{formatDate(quiz.createdAt)}</span>
           </div>
 
+          <motion.span
+            whileHover={{ scale: 1.05 }}
+            className="text-xs font-medium text-violet-600 bg-violet-50 px-3 py-1 rounded-full flex items-center"
+            onClick={() => {
+              window.location.href = `/subject/${params.noteid}/quiz/${quiz.id || quiz._id}/report`;
+            }}
+          >
+            View Report
+          </motion.span>
           <motion.span
             whileHover={{ scale: 1.05 }}
             onClick={handleCardClick}
