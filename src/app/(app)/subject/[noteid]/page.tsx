@@ -19,7 +19,9 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import Chatbot from "@/components/general/Chatbot";
 import PreviewText from "@/components/general/PreviewText";
-
+// import PDFViewer from "@/components/general/PdfViewer";
+import ReactViewAdobe from "react-adobe-embed";
+import View from "react-adobe-embed";
 function DocumentViewer() {
   const router = useParams();
   const [documentUrl, setDocumentUrl] = useState("");
@@ -151,16 +153,16 @@ function DocumentViewer() {
 
   // Get the appropriate viewer URL based on file type
   const getViewerUrl = () => {
-    if (fileType === "pdf") {
-      return `${documentUrl}#toolbar=1&navpanes=0&scrollbar=0`;
-    } else if (fileType === "pptx") {
-      // For PPTX, we'll use Microsoft's Office Online viewer or Google's viewer
-      // For Cloudinary URLs, we need to use the direct URL
-      return `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(
-        documentUrl
-      )}`;
-    }
-    return documentUrl;
+    // if (fileType === "pdf") {
+    //   return `${documentUrl}#toolbar=1&navpanes=0&scrollbar=0`;
+    // } else if (fileType === "pptx") {
+    // For PPTX, we'll use Microsoft's Office Online viewer or Google's viewer
+    // For Cloudinary URLs, we need to use the direct URL
+    return `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(
+      documentUrl
+    )}`;
+    // }
+    // return documentUrl;
   };
 
   // Apply fullscreen styles conditionally
@@ -248,7 +250,7 @@ function DocumentViewer() {
                 } px-3 py-2 rounded hover:bg-gray-200 transition-colors`}
               >
                 <Eye className="mr-2 h-4 w-4" />
-                {view === "fullWidth" ? "Show Chat" : "Full Width"}
+                {view && view === "fullWidth" ? "Show Chat" : "Full Width"}
               </motion.button>
               {quizId && (
                 <motion.button
@@ -325,26 +327,63 @@ function DocumentViewer() {
               )}
             </button>
           </div>
+          {documentUrl && fileType === "pptx" && (
+            <div
+              className={`relative w-full ${fullScreen ? "h-[100svh]" : "h-[75vh]"} max-w-full`}
+              style={{ overflow: "hidden" }}
+            >
+              <iframe
+                src={getViewerUrl()}
+                className="w-full h-full border-none"
+                title={noteDetails?.title || "Document Viewer"}
+                loading="lazy"
+                allowFullScreen
+                style={{
+                  WebkitOverflowScrolling: "touch",
+                  maxWidth: "100vw",
+                  height: "100%",
+                  width: "100%",
+                  minHeight: "400px",
+                }}
+              />
+            </div>
+          )}
+
+          {/* Zoom controls component */}
+          {/* Place this component definition outside your main component */}
+          {/* You can move this to a separate file if you wish */}
           {/* Document iframe */}
-          {documentUrl && (
-            <iframe
-              src={getViewerUrl()}
-              className={`w-full border-none ${
-                fullScreen ? "h-[100svh]" : "h-[75vh]"
-              } max-w-full overflow-auto`}
-              title={noteDetails?.title || "Document Viewer"}
-              loading="lazy"
-              allowFullScreen
-              style={{
-                WebkitOverflowScrolling: "touch",
-                maxWidth: "100vw",
-              }}
-            />
+          {documentUrl && fileType === "pdf" && (
+            <>
+              <div className="flex flex-col items-center gap-4">
+                <ReactViewAdobe
+                  clientId={process.env.NEXT_PUBLIC_ADOBE_KEY}
+                  title="Daksh Document"
+                  url={documentUrl || noteDetails.documentLink}
+                  id="pdf-brochure"
+                  fileMeta={{
+                    fileName: "Daksh Document",
+                  }}
+                  previewConfig={{
+                    defaultViewMode: "SINGLE_PAGE",
+                    showAnnotationTools: false,
+                    showPageControls: true,
+                    showDownloadPDF: true,
+                    showZoomControl: true,
+                  }}
+                  style={{
+                    height: "100vh",
+                    width: "100vw",
+                  }}
+                  debug
+                />
+              </div>
+            </>
           )}
         </motion.div>
 
         {/* Right side panel - only show when not in fullWidth mode or fullScreen */}
-        {view !== "fullWidth" && !fullScreen && (
+        {view && view !== "fullWidth" && !fullScreen && (
           <div className="w-full md:w-2/5 bg-white rounded-lg shadow-lg overflow-hidden h-[75vh] mt-4 md:mt-0">
             {view === "summary" ? (
               <PreviewText contentData={text} />

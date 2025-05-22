@@ -12,7 +12,7 @@
 .skeleton-loader {
   position: relative;
   overflow: hidden;
-  background-color: #f3f4f6; /* Tailwind's gray-100 */
+  background-color: #f3f4f6;
 }
 
 .skeleton-loader::before {

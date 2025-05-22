@@ -221,16 +221,4 @@ function StructuredPreview({ contentData }) {
   );
 }
 
-<<<<<<< HEAD
-export default PreviewText;
-
-// {msg.content.map((item, i) => {
-
-//                                                             item.data = item.data.replace(/\\n/g, '\n').replaceAll("**", "").replace("**", "")
-
-//                                                             if (item.type === 'paragraph') {
-//                                                                 return <p key={i} className="whitespace-pre-wrap break-words">{item.data}</p>
-//                                                             } else if (item.type === 'co
-=======
 export default StructuredPreview;
->>>>>>> fe5409bf883787bfe4fe633c1449127360733610
