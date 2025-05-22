@@ -12,6 +12,7 @@ import {
   Home,
 } from "lucide-react";
 import QuestionCardOption from "@/components/general/EnhancedCard";
+import { result } from "lodash";
 
 function Page() {
   const params = useParams();
@@ -32,6 +33,11 @@ function Page() {
     incorrect: 0,
     unattempted: 0,
     attempted: 0,
+  });
+  const [questionData, setQuestionData] = useState({
+    correct: [],
+    incorrect: [],
+    unattempted: [],
   });
   console.log(setMultiCorrect);
 
@@ -124,18 +130,43 @@ function Page() {
     let incorrect = 0;
     let unattempted = 0;
 
-    // Calculate SCQ results
+    let correctList = [];
+    let incorrectList = [];
+    let unattemptedList = [];
+
     singleCorrect.forEach((q, index) => {
-      if (userGeneratedSCQResult[index] === "") {
+      const userAnswer = userGeneratedSCQResult[index];
+
+      if (userAnswer === "") {
+        unattemptedList.push({ question: q, userAnswer: userAnswer });
         unattempted++;
-      } else if (userGeneratedSCQResult[index] === q.answers) {
+      } else if (userAnswer === q.answers) {
+        correctList.push({ question: q, userAnswer: userAnswer });
         correct++;
       } else {
+        incorrectList.push({ question: q, userAnswer: userAnswer });
         incorrect++;
       }
     });
 
-    return { correct, incorrect, unattempted };
+    console.log("Correct List:", correctList);
+    console.log("Incorrect List:", incorrectList);
+    console.log("Unattempted List:", unattemptedList);
+
+    // setQuestionData({
+    //   correct: correctList,
+    //   incorrect: incorrectList,
+    //   unattempted: unattemptedList,
+    // });
+
+    return {
+      correct,
+      correctList,
+      incorrectList,
+      unattemptedList,
+      incorrect,
+      unattempted,
+    };
   };
 
   const initiateSubmit = () => {
@@ -164,6 +195,8 @@ function Page() {
     const results = calculateResults();
     //make a submission request
     try {
+      console.log("Submitting quiz with results:", questionData);
+
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/interaction/submit-quiz/${params.quizid}`,
         {
@@ -172,6 +205,9 @@ function Page() {
           totalCorrectQuestion: results.correct,
           totalWrongQuestion: results.incorrect,
           totalAttemptedQuestion: results.correct + results.incorrect,
+          correct: results.correctList,
+          incorrect: results.incorrectList,
+          unattempted: results.unattemptedList,
         },
         {
           withCredentials: true,
