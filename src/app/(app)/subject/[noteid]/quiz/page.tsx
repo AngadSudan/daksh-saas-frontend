@@ -61,30 +61,36 @@ function Page() {
           }
         );
 
-        const quizzes = response?.data?.data || [];
-
-        if (quizzes.length === 0) {
-          setAdminToken("");
-          setAdmin(false);
-          setAllQuiz([]);
-          return;
-        }
+        const quizzes = response?.data?.data.dbQuiz || [];
+        console.log("api call finished");
+        console.log(response);
 
         const currentAdminToken =
-          quizzes[0]?.notes?.chapters?.subject?.community?.createdBy || "";
+          response.data.data.dbNote.chapters.subject.community.createdBy || "";
 
         setAdminToken(currentAdminToken);
 
         const isAdmin = currentAdminToken === localStorage.getItem("token");
-        console.log(isAdmin);
+        console.log("the api token is matching with the userToken", isAdmin);
 
         // setAdmin(currentAdminToken === localStorage.getItem("token"));
         setAdmin(isAdmin);
 
         console.log(quizzes);
-        setAdmin(currentAdminToken === localStorage.getItem("token"));
+        console.log("the current admin token is", currentAdminToken);
+        console.log(
+          "the local storage token is",
+          localStorage.getItem("token")
+        );
+
+        // setAdmin(currentAdminToken === localStorage.getItem("token"));
         console.log("is Admin", admin);
 
+        if (quizzes.length === 0) {
+          setAdminToken("");
+          setAllQuiz([]);
+          return;
+        }
         if (isAdmin) {
           console.log(quizzes);
           setAllQuiz(quizzes);
